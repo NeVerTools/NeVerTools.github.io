@@ -81,7 +81,7 @@ analytics:
 # Site Author
 author:
   name             : "Never Tools"
-  avatar           : "never2.png"
+  avatar           : "profile.png"
   bio              : "Automated verification of neural networks, machine learned and standard programs"
   location         : "University of Genoa"
   employer         :
