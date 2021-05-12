@@ -9,7 +9,7 @@
 locale                   : "en-US"
 title                    : "neuralverification.org"
 title_separator          : "-"
-name                     : &name "Never Tools"
+name                     : &name "NeVer Tools"
 description              : &description "Verification of neural networks and other machine learned and classical programs"
 url                      : https://nevertools.github.io 
 baseurl                  : "" # the subpath of your site, e.g. "/blog"
