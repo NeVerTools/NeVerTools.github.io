@@ -13,6 +13,6 @@ author_profile: true
 
 ## Verification of Neural Networks
 
-{% for post in site.publications reversed %}
+{% for post in site.publications/nnver reversed %}
   {% include archive-single.html %}
 {% endfor %}
