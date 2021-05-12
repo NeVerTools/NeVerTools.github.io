@@ -1,0 +1,17 @@
+---
+title: "An Abstraction-Refinement Approach to Verification of Artificial Neural Networks"
+collection: publications
+permalink: /publication/2010-7-15-CAV
+excerpt: 'This paper is the first proposal of an automated verification approach for (shallow) neural networks.'
+date: 2010-7-15
+venue: 'Computer Aided Verification, 22nd International Conference, CAV 2010'
+paperurl: 'http://nevertools.github.io/files/2010_CAV.pdf'
+citation: 'Luca Pulina, Armando Tacchella -
+<b>An Abstraction-Refinement Approach to Verification of Artificial Neural Networks</b>. CAV 2010: 243-257'
+---
+This paper is the first proposal of an automated verification approach for (shallow) neural networks.
+
+[Download paper here](http://nevertools.github.io/files/2010_CAV.pdf)
+
+Recommended citation: Luca Pulina, Armando Tacchella -
+<b>An Abstraction-Refinement Approach to Verification of Artificial Neural Networks</b>. CAV 2010: 243-257.
