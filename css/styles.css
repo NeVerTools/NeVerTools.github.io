@@ -407,9 +407,9 @@ hr {
 }
 
 .team-member img {
-    width: 14rem;
-    height: 14rem;
-    border: 0.5rem solid rgba(0, 0, 0, 0.1);
+    width: 12rem;
+    height: 12rem;
+    border: 0.2rem solid rgba(0, 0, 0, 0.1);
 }
 
 .team-member h4, .team-member .h4 {
@@ -460,6 +460,14 @@ hr {
     background-color: #fff;
     border: .125rem solid #dee2e6;
     border-radius: .5rem
+}
+
+.img-footer {
+	width: 15rem;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: -5rem;
+	margin-bottom: -5rem
 }
 
 .figure {
@@ -9905,7 +9913,7 @@ a.text-dark:focus, a.text-dark:hover {
 }
 
 .masthead .masthead-avatar {
-    width: 35rem
+    width: 15rem
 }
 
 @media (min-width: 992px) {
