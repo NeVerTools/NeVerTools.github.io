@@ -66,6 +66,11 @@ body {
     outline: 0 !important
 }
 
+img.img-footer {
+    -webkit-filter: invert(1);
+	    filter: invert(1);
+}
+
 hr {
     box-sizing: content-box;
     height: 0;
