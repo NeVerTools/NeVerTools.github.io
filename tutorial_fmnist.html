@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="msvalidate.01" content="8A044F6B24E3A19810D766CAE2ACA17A" />
+    <meta name="description" content="NeVer Tools collects knowledge and insight about formal verification of Neural Networks.">
+    <meta name="author" content="Navendu Pottekkat | Stefano Demarchi">
+    <meta name="keywords" content="VNNLIB, NeVer, NeVerTools, CoCoNet, Neural Networks Verification">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="msapplication-config" content="./assets/img/favicons/browserconfig.xml">
+    <meta name="theme-color" content="#ffffff">
+    <title>NeVer 2</title>
+
+    <!-- Favicons -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./assets/img/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/img/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./assets/img/favicons/favicon-16x16.png">
+    <link rel="manifest" href="./assets/img/favicons/site.webmanifest">
+    <link rel="mask-icon" href="./assets/img/favicons/safari-pinned-tab.svg" color="#5bbad5">
+    <link rel="shortcut icon" href="./assets/img/favicons/favicon.ico">
+
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/js/all.min.js"
+        crossorigin="anonymous"></script>
+
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link href="css/styles.css" rel="stylesheet">
+
+    <!-- Fonts CSS-->
+    <link rel="stylesheet" href="css/heading.css">
+    <link rel="stylesheet" href="css/body.css">
+
+    <!-- Custom CSS-->
+    <style>
+        pre {
+            font-family: Consolas,"courier new";
+            font-size: 105%;
+            color: #dee2e6;
+            background-color: #2c3e50;
+            padding: 7px 14px;
+            border-radius: 5px;
+        }
+
+        .useful-link{
+            color: inherit;
+            text-decoration: underline;
+            font-family: SB Heading, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+            font-weight: 600;
+            line-height: 1.2;
+        }
+
+        .code-instructions {
+            padding-bottom: 4px;
+        }
+
+        .responsive {
+            width: 100%;
+            max-width: 110%;
+            height: auto;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .font-large {
+            font-size:large;
+        }
+
+        .float-right {
+            float:right;
+        }
+        .center {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 5%;
+        }
+        .titles-tutorial {
+            text-align: center !important;
+            padding: 5%;
+        }
+
+        .flex-center {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .blue-font {
+            color: #2c3e50;
+        }
+        #train, #overview {
+            color: #2c3e50;
+        }
+        #train b {
+            color: #2c3e50;
+            font-size:115%;
+        }
+
+        #overview p, #build p, #train p, #verify p {
+            font-size: 1.25rem;
+            font-weight: 300;
+        }
+
+    </style>
+</head>
+
+<body id="page-top">
+    <nav class="navbar navbar-expand-lg bg-secondary fixed-top" id="mainNav">
+        <div class="container"><a class="navbar-brand js-scroll-trigger" href="#page-top">NeVer 2 - Tutorials</a>
+            <button class="navbar-toggler navbar-toggler-right font-weight-bold bg-primary text-white rounded"
+                type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive"
+                aria-expanded="false" aria-label="Toggle navigation"><i class="fas fa-bars"></i></button>
+            <div class="collapse navbar-collapse" id="navbarResponsive">
+                <ul class="navbar-nav ml-auto">
+					<li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
+                            href="#overview">Overview</a>
+                    </li>
+                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
+                            href="#build">Build</a>
+                    </li>
+                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
+                        href="#train">Training</a>
+                    </li>
+                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
+                        href="#verify">Verification</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <header class="masthead bg-primary text-white text-center">
+        <div class="container d-flex align-items-center flex-column">
+            <!-- Masthead Heading-->
+            <h1 class="masthead-heading mb-0">fMNIST tutorial</h1>
+            <!-- Icon Divider-->
+            <div class="divider-custom divider-light">
+                <div class="divider-custom-line"></div>
+                <div class="divider-custom-icon"><i class="fas fa-caret-down"></i></div>
+                <div class="divider-custom-line"></div>
+            </div>
+            <!-- Masthead Subheading-->
+                <p class="masthead-subheading font-weight-light mb-0">
+                    Fashion MNIST is a dataset of Zalando's article images—consisting of a training set of 60,000 examples
+                    and a test set of 10,000 examples. Each example is a 28x28 grayscale image, associated with a label from
+                    10 classes. Fashion-MNIST is intended to serve as a direct drop-in replacement for the original MNIST
+                    dataset for benchmarking machine learning algorithms. It shares the same image size and structure of
+                    training and testing splits.
+                </p>
+        </div>
+    </header>
+
+	<!-- OVERVIEW SECTION -->
+    <section class="masthead page-section portfolio" id="overview">
+        <div class="container">
+            <!-- Portfolio Section Heading -->
+            <div class="text-center">
+                <h2 class="page-section-heading text-secondary mb-0 d-inline-block">Network Overview</h2>
+            </div>
+            <!-- Icon Divider -->
+            <div class="divider-custom">
+                <div class="divider-custom-line"></div>
+                <div class="divider-custom-icon"><i class="fas fa-code"></i></div>
+                <div class="divider-custom-line"></div>
+            </div>
+			<!-- Example Section Content -->
+			<div class="text-center">
+                <div id="overview-description">
+                    <p>The picture below shows the formal representation of the Convolutional Neural Network for this dataset.
+                    The architecture consists of a convolutional block, followed by a MaxPooling and a Flattening operation;
+                    then there are 3 Fully Connected layers with ReLU activation functions.
+                    This network takes as input a 1x28x28 tensor and outputs a 1D vector of 10 elements.</p>
+                </div>
+                <br>
+                <img class="responsive" src="./assets/img/tutorials/fmnist/formal_graph.png" alt="Convolutional diagram">
+			</div>
+        </div>
+    </section>
+
+    <!-- BUILD SECTION -->
+    <section class="page-section bg-primary text-white mb-0" id="build">
+        <div class="container">
+            <!-- Contact Section Heading-->
+            <div class="text-center">
+                <h2 class="page-section-heading d-inline-block text-white">Network Construction</h2>
+            </div>
+            <!-- Icon Divider-->
+            <div class="divider-custom divider-light">
+                <div class="divider-custom-line"></div>
+                <div class="divider-custom-icon"><i class="fas fa-hammer"></i></div>
+                <div class="divider-custom-line"></div>
+            </div>
+            <!-- Contact Section Content-->
+            <div class="text-left font-large">
+                <div id="build-network">
+                    <br>
+                    <div>
+                        <p class="lead">
+                          In NeVer2 you can select the necessary blocks from the left toolbar;
+                          the requested nodes will appear on the canvas with default parameters.
+                          You can drag and drop them to any position in the canvas.
+                          To edit their parameters you can just double-click or right-click -> "Edit", while
+                          to delete them you can press DEL or right-click -> "Delete".
+                        </p>
+                        <img class="center" src="./assets/img/tutorials/common/options.png" alt="Right-Click menu options">
+                    </div>
+                    <br>
+                    <br>
+                    <div>
+                        <p>
+                          The first layer is defined by a Convolutional block, with the parameters defined as in the example;
+                          the input shape is 1,28,28 and the convolution is operated with a 5 pixel kernel filter.
+                        </p>
+                        <div class="center flex-center">
+                            <img style="padding-right: 10%;" src="./assets/img/tutorials/fmnist/input.png" alt="edit Convolutional block">
+                            <img src="./assets/img/tutorials/fmnist/net1.png" alt="Convolutional block">
+                        </div>
+                    </div>
+                    <br>
+                    <div>
+                        <p>
+                          After this you can add a MaxPool block and edit the parameters accordingly. You can connect the two blocks
+                          activating the drawing mode with the "Draw Line" button in the top-left corner or by pressing the CTRL+D
+                          shortcut and clicking first on the starting block and then on the next block.
+                        </p>
+                        <div class="center flex-center">
+                            <img style="padding-right: 10%;" src="./assets/img/tutorials/common/drawLine.png" alt="Toolbar with highlighted Draw Line button">
+                            <img src="./assets/img/tutorials/fmnist/net2.png" alt="Convolutional and MaxPool NeVer2">
+                        </div>
+
+                    </div>
+                    <br>
+                    <div>
+                        <p>
+                          The next node is a Flatten operation, that unrolls the 3D tensor into a 1D array; this operation
+                          is followed by a ReLU activation. In order to flatten the input to a 1D array the <i>axis</i>
+                          parameter is set to 0.
+                        </p>
+                        <div class="center flex-center">
+                            <img src="./assets/img/tutorials/fmnist/net3.png" alt="MaxPool and Flatten node">
+                        </div>
+
+                    </div>
+                    <br>
+                    <div>
+                        <p>
+                          Finally the three Fully Connected layers resize the dimension to 1000, 100 and 10 neurons: this
+                          operation is performed by editing the <i>out_features</i> parameter. Each Fully Connected is
+                          followed by a ReLU activation.
+                        </p>
+                        <div class="center flex-center">
+                            <img src="./assets/img/tutorials/fmnist/network_complete.png" alt="Flatten and ReLU NeVer2">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- TRAIN SECTION -->
+    <section class="page-section" id="train">
+        <div class="container">
+            <!-- Contact Section Heading-->
+            <div class="text-center">
+                <h2 class="page-section-heading text-secondary d-inline-block mb-0">Network Training</h2>
+            </div>
+            <!-- Icon Divider-->
+            <div class="divider-custom">
+                <div class="divider-custom-line"></div>
+                <div class="divider-custom-icon"><i class="fas fa-brain"></i></div>
+                <div class="divider-custom-line"></div>
+            </div>
+            <!-- Contact Section Content-->
+            <div class="text-left font-large">
+                <div id="train-network">
+                    <br>
+                    <div>
+                        <p>
+                          Once the network is completed, you can train it. In the menu bar select "Learn..." -> "Train":
+                          the training window appears, where you can select the dataset and the learning parameters.
+                          Given the popularity of this dataset, both MNIST and fMNIST are available by default; the first
+                          time they will be downloaded and then will be stored in the NeVer2 working directory. There is
+                          a pre-defined dataset transform tailored for both convolutional and linear MNIST and fMNIST
+                          networks, which compose 2 or 3 transforms: <i>pilToTensor</i> and <i>Normalize(1, 0.5)</i> in
+                          both cases, <i>Flatten</i> in the linear case only.
+                        </p>
+                        <img class="center" src="./assets/img/tutorials/fmnist/training_setup.png" alt="Training parameters of the network">
+                        <p>
+                          The learning parameters can be set as follows:<br><br>
+                          <b><i>Optimizer</i></b>: at the moment only "Adam" (adaptive moment estimation) is supported, being
+                          the most popular and effective gradient based optimization algorithm. Once selected, you can edit all
+                          its related parameters.<br><br>
+                          <b><i>Learning Rate Scheduler</i></b>: like the Optimizer, only "ReduceLROnPlateau" is supported. It adjusts the
+                          learning rate only when a plateau in model performance is detected, e.g. no change for a given number of
+                          training epochs.<br><br>
+                          <b><i>Loss Function</i></b>: you can choose between "Cross Entropy" and "MSE Loss", depending on the network
+                          structure.<br><br>
+                          <b><i>Precision Metric</i></b>: you can choose between "Inaccuracy" and "MSE loss".<br><br>
+                          <b><i>Epochs</i></b>: it defines the steps that the learning algorithm will perform through the training process.
+                          <br><br>
+                          <b><i>Validation Percentage</i></b>: (a number between 0 and 1) indicates the percentage of the dataset to use
+                          as the validation set.<br><br>
+                          <b><i>Training batch size</i></b> and <b><i>Validation batch size</i></b>: it defines the dimension of the
+                          training batches.<br><br>
+                          <b><i>Cuda</i></b>: it allows to take advantage of NVidia GPU architecture for the computation.<br><br>
+                          <b><i>Train patience</i></b> <i>(optional)</i>: the number of epochs in which the loss may not decrease
+                          before the training procedure is interrupted with early stopping.<br><br>
+                          <b><i>Checkpoints root</i></b> <i>(optional)</i>: where to store the checkpoints of the training strategy, by
+                          default the working directory of NeVer2.<br><br>
+                          <b><i>Verbosity level</i></b> <i>(optional)</i>: how many batches between training log prints (default 1).
+                        </p>
+                    </div>
+                    <br>
+                    <div>
+                        <p>
+                          Once the parameters are set, clicking "Train Network" runs the training. Logs are printed in a box
+                          below the buttons.
+                        </p>
+                        <br>
+                        <img class="center" src="./assets/img/tutorials/fmnist/training_loss.png" alt="Training Results">
+                    </div>
+                    <div>
+                        <p>
+                          The <b>Best Loss Score</b> label indicates the training error percentage; in this case,
+                          with a 10 epoch long training the best loss is 0.0136, corresponding to a 1.36% error rate. Looking
+                          at the following diagram it is clear that increasing the training epochs improves significantly
+                          the error rate.
+                        </p>
+                        <img class="center" src="./assets/img/tutorials/fmnist/stats.png" alt="error rate related to epochs number">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VERIFY SECTION -->
+    <section class="page-section bg-primary text-white mb-0" id="verify">
+        <div class="container">
+            <!-- Contact Section Heading-->
+            <div class="text-center">
+                <h2 class="page-section-heading d-inline-block text-white">Network Verification</h2>
+            </div>
+            <!-- Icon Divider-->
+            <div class="divider-custom divider-light">
+                <div class="divider-custom-line"></div>
+                <div class="divider-custom-icon"><i class="fas fa-check"></i></div>
+                <div class="divider-custom-line"></div>
+            </div>
+            <!-- Contact Section Content-->
+            <div class="text-left font-large">
+                <div id="verify-network">
+                    <br>
+                    <h1 class="titles-tutorial">In progress...</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer text-center">
+  		<div class="container">
+  			 <div class="row">
+                  <!-- Footer Location-->
+                  <div class="col-lg-4 mb-5 mb-lg-0">
+                      <h4 class="mb-4"></h4>
+                      <p class="pre-wrap lead mb-0"> </p>
+                  </div>
+  				<div class="col-lg-4 mb-5 mb-lg-0">
+                  <h4 class="mb-4">Powered by AIMS-Lab</h4>
+  					<a target="_blank" href="http://www.aimslab.org">
+  						<img class="img-footer" src="assets/svg/unige.svg" alt="UniGE">
+  					</a>
+  				</div>
+  			</div>
+  		</div>
+  	</footer>
+
+      <!-- Copyright Section -->
+      <section class="copyright py-4 text-center text-white">
+          <div class="container"><small class="pre-wrap"><a target="_blank" href="https://github.com/NeVerTools/NeVerTools.github.io/blob/master/LICENSE">MIT Licensed</a> | neuralverification.org 2021 | Hosted with ❤ by <a href="https://github.com/" target="_blank">GitHub</a></small></div>
+      </section>
+      <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+      <div class="scroll-to-top d-lg-none position-fixed"><a
+              class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top"><i
+                  class="fa fa-chevron-up"></i></a></div>
+
+
+      <!-- Bootstrap core JS -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+      <!-- Third party plugin JS -->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
+      <!-- Core theme JS -->
+      <script src="js/scripts.js"></script>
+      <!-- GitHub buttons -->
+      <script async defer src="https://buttons.github.io/buttons.js"></script>
+  </body>
+
+  </html>
