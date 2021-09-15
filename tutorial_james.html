@@ -11,7 +11,7 @@
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="msapplication-config" content="./assets/img/favicons/browserconfig.xml">
     <meta name="theme-color" content="#ffffff">
-    <title>NeVer 2 - fMNIST</title>
+    <title>NeVer 2 - James</title>
 
     <!-- Favicons -->
     <link rel="apple-touch-icon" sizes="180x180" href="./assets/img/favicons/apple-touch-icon.png">
@@ -133,7 +133,7 @@
     <header class="masthead bg-primary text-white text-center">
         <div class="container d-flex align-items-center flex-column">
             <!-- Masthead Heading-->
-            <h1 class="masthead-heading mb-0">fMNIST tutorial</h1>
+            <h1 class="masthead-heading mb-0">James tutorial</h1>
             <!-- Icon Divider-->
             <div class="divider-custom divider-light">
                 <div class="divider-custom-line"></div>
@@ -142,12 +142,12 @@
             </div>
             <!-- Masthead Subheading-->
                 <p class="masthead-subheading font-weight-light mb-0">
-                    Fashion MNIST is a dataset of Zalando's article images—consisting of a training set of 60,000 examples
-                    and a test set of 10,000 examples. Each example is a 28x28 grayscale image, associated with a label from
-                    10 classes. Fashion-MNIST is intended to serve as a direct drop-in replacement for the original MNIST
-                    dataset for benchmarking machine learning algorithms. It shares the same image size and structure of
-                    training and testing splits.
-                </p>
+                  James is the name of a humanoid robot project developed by University of Genoa and Italian Institute of Technology (IIT),
+                  intended to operate in the context of object manipulation. The dataset used here is a collection composed of 8 inputs and 6 outputs:
+                  the eight inputs consist of two vectors of four elements each, one related to the velocity and the other to the angle of the shoulder
+                  and elbow joints. The six outputs are the corresponding values of internal forces and torques in a Cartesian space.
+                  These data are meant to detect potentially unsafe situations, e.g., contact with obstacles or humans.
+              </p>
         </div>
     </header>
 
@@ -167,13 +167,13 @@
 			<!-- Example Section Content -->
 			<div class="text-center">
                 <div id="overview-description">
-                    <p>The picture below shows the formal representation of the Convolutional Neural Network for this dataset.
-                    The architecture consists of a convolutional block, followed by a MaxPooling and a Flattening operation;
-                    then there are 3 Fully Connected layers with ReLU activation functions.
-                    This network takes as input a 1x28x28 tensor and outputs a 1D vector of 10 elements.</p>
+                    <p>The picture below shows the formal representation of the linear Neural Network for this dataset.
+                    The architecture consists of 3 hidden layers with ReLU activation functions and a decreasing
+                    number of neurons, namely 64, 32 and 16.<br>
+                    This network takes as input a 1D vector of 8 elements and outputs a 1D vector of 6 elements.</p>
                 </div>
                 <br>
-                <img class="responsive" src="./assets/img/tutorials/fmnist/formal_graph.png" alt="Convolutional diagram">
+                <img class="responsive" src="./assets/img/tutorials/james/formal_graph.png" alt="Convolutional diagram">
 			</div>
         </div>
     </section>
@@ -196,63 +196,63 @@
                 <div id="build-network">
                     <br>
                     <div>
-                      <p class="lead">
-                        In NeVer2 you can select the necessary blocks from the left toolbar;
-                        the requested nodes will appear on the canvas with default parameters.
-                        You can drag and drop them to any position in the canvas.
-                        To edit their parameters you can just double-click or right-click -> "Edit", while
-                        to delete them you can press DEL or right-click -> "Delete".
-                      </p>
-                      <div class="center flex-center">
-                        <img style="padding-right: 10%;" src="./assets/img/tutorials/common/toolbar.png" alt="Right-Click menu options">
-                        <img src="./assets/img/tutorials/common/options.png" alt="Right-Click menu options">
-                      </div>
-                    </div>
-                    <br>
-                    <div>
-                        <p>
-                          The first layer is defined by a Convolutional block, with the parameters defined as in the example;
-                          the input shape is 1,28,28 and the convolution is operated with a 5 pixel kernel filter.
+                        <p class="lead">
+                          In NeVer2 you can select the necessary blocks from the left toolbar;
+                          the requested nodes will appear on the canvas with default parameters.
+                          You can drag and drop them to any position in the canvas.
+                          To edit their parameters you can just double-click or right-click -> "Edit", while
+                          to delete them you can press DEL or right-click -> "Delete".
                         </p>
                         <div class="center flex-center">
-                            <img style="padding-right: 10%;" src="./assets/img/tutorials/fmnist/input.png" alt="edit Convolutional block">
-                            <img src="./assets/img/tutorials/fmnist/net1.png" alt="Convolutional block">
+                          <img style="padding-right: 10%;" src="./assets/img/tutorials/common/toolbar.png" alt="Right-Click menu options">
+                          <img src="./assets/img/tutorials/common/options.png" alt="Right-Click menu options">
                         </div>
                     </div>
                     <br>
                     <div>
                         <p>
-                          After this you can add a MaxPool block and edit the parameters accordingly. You can connect the two blocks
+                          The first layer is defined by a Fully Connected block, with the parameters defined as in the example;
+                          the input shape is 8 and the <i>out_features</i> parameter is set to 64, i.e., the dimension of the
+                          first hidden layer.
+                        </p>
+                        <div class="center flex-center">
+                            <img style="padding-right: 10%;" src="./assets/img/tutorials/james/input.png" alt="edit Fully Connected block">
+                            <img src="./assets/img/tutorials/james/fc.png" alt="Fully Connected block">
+                        </div>
+                    </div>
+                    <br>
+                    <div>
+                        <p>
+                          After this you can add a ReLU block as an activation function. You can connect the two blocks
                           activating the drawing mode with the "Draw Line" button in the top-left corner or by pressing the CTRL+D
                           shortcut and clicking first on the starting block and then on the next block.
                         </p>
                         <div class="center flex-center">
                             <img style="padding-right: 10%;" src="./assets/img/tutorials/common/drawLine.png" alt="Toolbar with highlighted Draw Line button">
-                            <img src="./assets/img/tutorials/fmnist/net2.png" alt="Convolutional and MaxPool NeVer2">
+                            <img src="./assets/img/tutorials/james/net1.png" alt="FC and ReLU NeVer2">
                         </div>
 
                     </div>
                     <br>
                     <div>
                         <p>
-                          The next node is a Flatten operation, that unrolls the 3D tensor into a 1D array; this operation
-                          is followed by a ReLU activation. In order to flatten the input to a 1D array the <i>axis</i>
-                          parameter is set to 0.
+                          For the next layer you can add a new Fully Connected block with the <i>out_features</i> parameter
+                          set to 32, and connecting it to the first ReLU node. Now the <i>in_features</i>
+                          parameter of the second Fully Connected node is updated with the ReLU output value (64).
                         </p>
                         <div class="center flex-center">
-                            <img src="./assets/img/tutorials/fmnist/net3.png" alt="MaxPool and Flatten node">
+                            <img src="./assets/img/tutorials/james/net2.png" alt="Hidden layer">
                         </div>
-
                     </div>
                     <br>
                     <div>
                         <p>
-                          Finally the three Fully Connected layers resize the dimension to 1000, 100 and 10 neurons: this
-                          operation is performed by editing the <i>out_features</i> parameter. Each Fully Connected is
-                          followed by a ReLU activation.
+                          The sequence of Fully Connected and ReLU nodes is repeated with the structure presented in the
+                          beginning. At the end of the last ReLU node you can finally add the Fully Connected output layer,
+                          and set the <i>out_features</i> parameter to 6.
                         </p>
                         <div class="center flex-center">
-                            <img class="responsive" src="./assets/img/tutorials/fmnist/network_complete.png" alt="Flatten and ReLU NeVer2">
+                            <img class="responsive" src="./assets/img/tutorials/james/network_complete.png" alt="Feed-forward NN">
                         </div>
                     </div>
                 </div>
@@ -281,13 +281,16 @@
                         <p>
                           Once the network is completed, you can train it. In the menu bar select "Learn..." -> "Train":
                           the training window appears, where you can select the dataset and the learning parameters.
-                          Given the popularity of this dataset, both MNIST and fMNIST are available by default; the first
-                          time they will be downloaded and then will be stored in the NeVer2 working directory. There is
-                          a pre-defined dataset transform tailored for both convolutional and linear MNIST and fMNIST
-                          networks, which compose 2 or 3 transforms: <i>pilToTensor</i> and <i>Normalize(1, 0.5)</i> in
-                          both cases, <i>Flatten</i> in the linear case only.
+                          We made available the most common datasets directly in the application, but in order to load a
+                          custom dataset some additional steps are required. By selecting <i>Custom Data Source...</i>
+                          in the Dataset box you can load the corresponding file, and fill the dataset parameters dialog.
+                          </br></br>
+                          <img class="center" src="./assets/img/tutorials/james/dataset_load.png" alt="Dataset loading">
+                          In particular, the <i>Target index</i> is the separator between input and output data, i.e.,
+                          the number of inputs. The data type is controlled by a combo box and the delimiter character is
+                          set by default to a comma.
                         </p>
-                        <img class="center" src="./assets/img/tutorials/fmnist/training_setup.png" alt="Training parameters of the network">
+                        <img class="center" src="./assets/img/tutorials/james/training_setup.png" alt="Training parameters of the network">
                         <p>
                           The learning parameters can be set as follows:<br><br>
                           <b><i>Optimizer</i></b>: at the moment only "Adam" (adaptive moment estimation) is supported, being
@@ -320,16 +323,16 @@
                           below the buttons.
                         </p>
                         <br>
-                        <img class="center" src="./assets/img/tutorials/fmnist/training_loss.png" alt="Training Results">
+                        <img class="center" src="./assets/img/tutorials/james/training_loss.png" alt="Training Results">
                     </div>
                     <div>
                         <p>
                           The <b>Best Loss Score</b> label indicates the training error percentage; in this case,
-                          with a 10 epoch long training the best loss is 0.0136, corresponding to a 1.36% error rate. Looking
-                          at the following diagram shows how increasing the training epochs improves significantly
+                          with a 10 epoch long training the best loss is 0.00048, corresponding to a 0.048% error rate. Looking
+                          at the following diagram it is clear that increasing the training epochs improves slightly
                           the error rate.
                         </p>
-                        <img class="center" src="./assets/img/tutorials/fmnist/stats.png" alt="error rate related to epochs number">
+                        <img class="center" src="./assets/img/tutorials/james/stats.png" alt="error rate related to epochs number">
                     </div>
                 </div>
             </div>
@@ -339,6 +342,7 @@
     <!-- VERIFY SECTION -->
     <section class="page-section bg-primary text-white mb-0" id="verify">
         <div class="container">
+            <!-- Contact Section Heading-->
             <div class="text-center">
                 <h2 class="page-section-heading d-inline-block text-white">Network Verification</h2>
             </div>
@@ -348,13 +352,12 @@
                 <div class="divider-custom-icon"><i class="fas fa-check"></i></div>
                 <div class="divider-custom-line"></div>
             </div>
+            <!-- Contact Section Content-->
             <div class="text-left font-large">
-              <div id="verify-network">
-                <p class="lead">
-                  At the moment we do not support verification for Convolutional Neural Networks.
-                  This section will be updated in time.
-                </p>
-              </div>
+                <div id="verify-network">
+                    <br>
+                    <h1 class="titles-tutorial">In progress...</h1>
+                </div>
             </div>
         </div>
     </section>
@@ -374,8 +377,6 @@
   					</a>
   				</div>
   			</div>
-        </br></br>
-          This tutorial was provided by Karim Pedemonte, Giacomo Rosato and Andrea Gimelli.
   		</div>
   	</footer>
 
