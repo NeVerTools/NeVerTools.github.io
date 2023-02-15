@@ -20,9 +20,9 @@
 }
 
 .tw-nested {
-  display: none;
+  display: block;
 }
 
 .active {
-  display: block;
+  display: none;
 }
