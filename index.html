@@ -28,6 +28,9 @@
     <!-- Core theme CSS (includes Bootstrap)-->
     <link href="css/styles.css" rel="stylesheet">
 
+    <!-- TreeView CSS -->
+    <link href="css/publications.css" rel="stylesheet">
+
     <!-- Fonts CSS-->
     <link rel="stylesheet" href="css/heading.css">
     <link rel="stylesheet" href="css/body.css">
@@ -46,6 +49,12 @@
                     </li>
                     <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
                             href="#about">About</a>
+                    </li>
+                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
+                            href="#showcase">Showcase</a>
+                    </li>
+                    <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
+                            href="#publications">Publications</a>
                     </li>
                     <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
                             href="#team">Team</a>
@@ -188,48 +197,116 @@
                 <p class="pre-wrap lead">This is the home page of neuralverification.org, an initiative of researchers working at the <a href="https://www.dibris.unige.it" style="color:#343a40">Department of Informatics, Bioengineering, Robotics and Systems Engineering</a> of the <a href="https://www.unige.it" style="color:#343a40">University of Genoa.</a></p>
                 <p class="pre-wrap lead">The aim of the initiative is to develop tools that can verify neural networks and other machine learned programs as well as standard, i.e., manually written, code.</p>
             </div>
+        </div>
+    </section>
+
+    <!-- SHOWCASE SECTION -->
+    <section class="page-section" id="showcase">
+        <div class="container">
+            <!-- Showcase Section Heading-->
+            <div class="text-center">
+                <h2 class="page-section-heading text-secondary d-inline-block mb-0">Showcase</h2>
+            </div>
+            <!-- Icon Divider-->
+            <div class="divider-custom">
+                <div class="divider-custom-line"></div>
+                <div class="divider-custom-icon"><i class="fas fa-desktop"></i></div>
+                <div class="divider-custom-line"></div>
+            </div>
             <!-- Slides Container Content -->
             <div class="text-center">
                 <iframe src="assets/doc/slides.pdf#toolbar=0" width="100%" height="700">
                 </iframe>
             </div>
-            <!-- <div class="text-center">
-              <script src="//mozilla.github.io/pdf.js/build/pdf.js"></script>
-              <script type="text/javascript">
-              function renderPDF(url, canvasContainer, options) {
-                  var options = options || { scale: 1 };
+        </div>
+    </section>
 
-                  function renderPage(page) {
-                      var viewport = page.getViewport(options.scale);
-                      var canvas = document.createElement('canvas');
-                      var ctx = canvas.getContext('2d');
-                      var renderContext = {
-                        canvasContext: ctx,
-                        viewport: viewport
-                      };
+    <!-- PUBLICATIONS SECTION -->
+    <section class="page-section bg-primary text-white mb-0" id="publications">
+        <div class="container">
+            <!-- Publications Section Heading-->
+            <div class="text-center">
+                <h2 class="page-section-heading d-inline-block text-white">Publications</h2>
+            </div>
+            <!-- Icon Divider-->
+            <div class="divider-custom divider-light">
+                <div class="divider-custom-line"></div>
+                <div class="divider-custom-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="divider-custom-line"></div>
+            </div>
+            <!-- About Section Content-->
+            <div class="text-left">
+              <ul>
+                <!-- 2023 -->
+                <li><h4 class="treeview">2023</h4>
+                  <ul class="tw-nested">
+                    <li>
+                      <p class="pre-wrap lead">D. Guidotti, S. Demarchi, L. Pulina and A. Tacchella</p>
+                      <h5>Evaluating Reachability Algorithms for Neural Networks on NeVer2</h5>
+                      <p class="pre-wrap lead">Submitted for peer review</p>
+                    </li>
+                  </ul>
+                </li>
 
-                      canvas.height = viewport.height;
-                      canvas.width = viewport.width;
-                      canvasContainer.appendChild(canvas);
+                <!-- 2022 -->
+                <li><h4 class="treeview">2022</h4>
+                  <ul class="tw-nested">
+                    <li>
+                      <p class="pre-wrap lead">D. Guidotti</p>
+                      <h5>Verification and Repair of Machine Learning Models</h5>
+                      <p class="pre-wrap lead">PhD Thesis</p>
+                    </li>
+                    <li>
+                      <p class="pre-wrap lead">S. Demarchi and D. Guidotti</p>
+                      <h5>Counter-Example Guided Abstract Refinement for Verification of Neural Networks</h5>
+                      <p class="pre-wrap lead">CPS Summer School Workshop, PhD workshop</p>
+                    </li>
+                    <li>
+                      <p class="pre-wrap lead">S. Demarchi, D. Guidotti, A. Pitto and A. Tacchella</p>
+                      <h5>Formal Verification of Neural Networks: a Case Study about Adaptive Cruise Control</h5>
+                      <p class="pre-wrap lead">International ECMS Conference on Modeling and Simulation</p>
+                    </li>
+                  </ul>
+                </li>
 
-                      page.render(renderContext);
-                  }
+                <!-- 2021 -->
+                <li><h4 class="treeview">2021</h4>
+                  <ul class="tw-nested">
+                    <li>
+                      <p class="pre-wrap lead">D. Guidotti</p>
+                      <h5>Verification and Repair of Neural Networks</h5>
+                      <p class="pre-wrap lead">AAAI Conference on Artificial Intelligence</p>
+                    </li>
+                    <li>
+                      <p class="pre-wrap lead">D. Guidotti, L. Pulina and A. Tacchella</p>
+                      <h5>pyNeVer: a Framework for Learning and Verification of Neural Networks</h5>
+                      <p class="pre-wrap lead">Automated Technology for Verification and Analysis</p>
+                    </li>
+                    <li>
+                      <p class="pre-wrap lead">D. Guidotti, G. Cicala, T. Gili and A. Tacchella</p>
+                      <h5>Telling Faults From Cyber-Attacks In A Multi-Modal Logistic System With Complex Network Analysis</h5>
+                      <p class="pre-wrap lead">International ECMS Conference on Modeling and Simulation</p>
+                    </li>
+                    <li>
+                      <p class="pre-wrap lead">D. Guidotti</p>
+                      <h5>Safety Analysis of Deep Neural Networks</h5>
+                      <p class="pre-wrap lead">International Joint Conference on Artificial Intelligence (IJCAI)</p>
+                    </li>
+                  </ul>
+                </li>
 
-                  function renderPages(pdfDoc) {
-                      for(var num = 1; num <= pdfDoc.numPages; num++)
-                          pdfDoc.getPage(num).then(renderPage);
-                  }
-                  pdfjsLib.disableWorker = true;
-                  pdfjsLib.getDocument(url).then(renderPages);
-              }
-              </script>
-
-              <div id="holder"></div>
-
-              <script type="text/javascript">
-              renderPDF('assets/doc/slides.pdf', document.getElementById('holder'));
-              </script>
-          </div> -->
+                <!-- 2020 -->
+                <li><h4 class="treeview">2020</h4>
+                  <ul class="tw-nested">
+                    <li>
+                      <p class="pre-wrap lead">D. Guidotti, F. Leofante, L. Pulina and A. Tacchella</p>
+                      <h5>Verification of Neural Networks: Enhancing Scalability through Pruning</h5>
+                      <p class="pre-wrap lead">European Conference on Artificial Intelligence</p>
+                    </li>
+                  </ul>
+                </li>
+              </ul>
+            </div>
         </div>
     </section>
 
@@ -324,6 +401,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.4.1/jquery.easing.min.js"></script>
     <!-- Core theme JS -->
     <script src="js/scripts.js"></script>
+    <!-- Additional JS -->
+    <script src="js/extra.js"></script>
     <!-- GitHub buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
 </body>
