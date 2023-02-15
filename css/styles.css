@@ -363,6 +363,13 @@ template {
     font-weight: 300
 }
 
+.authors {
+    font-size: 1.25rem;
+    font-weight: 300;
+    font-style: italic;
+    color: #343a40
+}
+
 .display-1 {
     font-size: 6rem
 }
