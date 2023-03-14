@@ -34,6 +34,9 @@
     <!-- Fonts CSS-->
     <link rel="stylesheet" href="css/heading.css">
     <link rel="stylesheet" href="css/body.css">
+
+    <!-- Slide Canvas Block CSS -->
+    <link rel="stylesheet" href="css/canvas.css">
 </head>
 
 <body id="page-top">
@@ -215,8 +218,13 @@
             </div>
             <!-- Slides Container Content -->
             <div class="text-center">
-                <iframe src="assets/doc/slides.pdf#toolbar=0" width="100%" height="700">
-                </iframe>
+                <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.js"></script>
+                
+                <div id="canvas-arrow-container">
+                    <div id="left-arrow" class="inactive-arrow"><i class="fas fa-arrow-circle-left"></i></div>
+                    <canvas id="slide-canvas" class="canvas"></canvas>
+                    <div id="right-arrow" class="active-arrow"><i class="fas fa-arrow-circle-right"></i></div>
+                </div>
             </div>
         </div>
     </section>
@@ -448,6 +456,8 @@
     <script src="js/extra.js"></script>
     <!-- GitHub buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
+    <!-- Slide viewer JS -->
+    <script src="js/pdfviewer.js"></script>
 </body>
 
 </html>
