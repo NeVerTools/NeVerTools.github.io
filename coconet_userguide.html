@@ -68,7 +68,7 @@
             <!-- Masthead Subheading-->
             <p class="masthead-subheading font-weight-light mb-0">
                 CoCoNet is a tool for the visualization, construction and conversion of neural network models.</br>
-                CoCoNet supports ONNX, pyTorch and TensorFlow formats using the operators in the VNN-LIB zoo.</br>
+                CoCoNet supports ONNX and pyTorch formats using the operators in the VNN-LIB standard.</br>
                 This guide shows how to install, setup and use CoCoNet for the exchange of neural network models.</br>
             </p>
         </div>
@@ -90,17 +90,17 @@
       			<!-- Example Section Content -->
       			<div class="text-left lead">
               <p>
-                CoCoNet can be executed on any system running Python >= 3.8</br>
-                The instructions below have been tested on Windows, Ubuntu Linux, Mac OS x86 and ARM-based Mac OS</br>
+                CoCoNet can be executed on any system running Python >= 3.9</br>
+                The instructions below have been tested on Windows, Ubuntu Linux, Mac OS x86 and ARM-based Mac OS.</br>
 
                 <ul>
                   <li><h4>Linux, Mac OS x86 and Windows</h4>
                   </li>
                     <p>
-                      There is a number of Python packages required in order to run CoCoNet.
-                      All the following packages can be installed via PIP</br>
+                      The packages required in order to run CoCoNet are the <a href="https://github.com/NeVerTools/pyNeVer" target="_blank">pyNeVer</a>
+                      API and the PyQt6 framework, which can be installed via PIP</br>
                       <code>
-                        pip install numpy PyQt6 pysmt pynever
+                        pip install pynever PyQt6
                       </code></br>
                       After the installation, you can run CoCoNet from the root directory</br>
                       <code>
@@ -110,15 +110,15 @@
                   <li><h4>ARM-based Mac OS</h4>
                   </li>
                     <p>
-                      Since the Python packages needed are incompatible with "Python for ARM Platform" you can install Anaconda using Rosetta
-                      and create a x86 Python virtual environment. Create a new environment using Python 3.9.5 and activate it</br>
+                      Since the Python packages needed are incompatible with "Python for ARM Platform" you can install miniforge for arm64
+                      (Apple Silicon) and create a x86 Python virtual environment. Create a new environment using Python 3.9.5 and activate it</br>
                       <code>
                         $ conda create -n myenv python=3.9.5</br>
                         $ conda activate myenv
                       </code></br>
                       You can now run PIP for installing the libraries and run CoCoNet</br>
                       <code>
-                        $ pip install numpy PyQt6 pysmt pynever</br>
+                        $ pip install pynever PyQt6</br>
                         $ python CoCoNet/coconet.py
                       </code></br>
                       Note that each time you want to run CoCoNet you'll need to activate the Conda environment.
@@ -132,10 +132,6 @@
                 </code></br>
                 shows the possible command-line instructions available.
               </p>
-          <!--
-            </br>
-            <img class="responsive" src="./assets/img/tutorials/coconet/overview.png" width="100%" alt="CoCoNet overview">
-          -->
   	    </div>
       </div>
     </section>
@@ -155,8 +151,7 @@
         <div class="text-left font-large">
           <div class="text-left lead">
             <p>
-              At the moment we do not support verification for Convolutional Neural Networks.
-              This section will be updated in time.
+              In progress...
             </p>
           </div>
         </div>
@@ -179,8 +174,12 @@
             <!-- Contact Section Content-->
             <div class="text-left lead">
               <p>
-                <h4>Launch CoCoNet</h4></br>
-                Upon launching CoCoNet, there are always two blocks for defining the input and the output of the network:
+                <h4>Run CoCoNet</h4></br>
+                <div class="text-center">
+                  <img src="assets/img/tutorials/coconet/input_block.png"></img>
+                  <img src="assets/img/tutorials/coconet/output_block.png"></img>
+                </div>
+                Upon running CoCoNet, there are always two blocks for defining the input and the output of the network:
                 <ul>
                   <li>The <i>Input</i> block is used to set the input identifier and the expected input dimension of the network, while
                     the <i>Output</i> block is used only to set the output identifier; the output dimension will be displayed as it is
@@ -188,10 +187,13 @@
                   <li>The <strong>Name</strong> field is of type string</li>
                   <li>The <strong>Dimension</strong> field is either a single digit - for single-dimensional inputs - or a list of 
                     comma-separated values - for multi-dimensional inputs</li>
-                  <li>The <strong>Property</strong> box is used to select the property kind to add to the network</li>
+                  <li>The <strong>Property</strong> box is used to select the property to add to the network</li>
                 </ul></br>
 
                 <h4>Add layers</h4></br>
+                <div class="text-center">
+                  <img src="assets/img/tutorials/coconet/add_a_block.png"></img>
+                </div>
                 The left toolbar displays the available layers for building a network. Clicking on a layer button automatically
                 adds a new layer to the network with default parameters. When a block is displayed, it is possible to update the
                 parameters only if it is the last layer of the network in order to guarantee the consistency: for this reason,
@@ -225,8 +227,6 @@
   					</a>
   				</div>
   			</div>
-        </br></br>
-          This tutorial was provided by Andrea Gimelli, Karim Pedemonte and Giacomo Rosato.
   		</div>
   	</footer>
 
