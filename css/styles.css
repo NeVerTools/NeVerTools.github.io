@@ -66,6 +66,20 @@ body {
     outline: 0 !important
 }
 
+img.img-overview {
+    width: 850px;
+    height: auto;
+    margin-top: 50px;
+    border-radius: 15px;
+}
+
+img.img-tutorial {
+    width: 600px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+}
+
 img.img-footer {
     -webkit-filter: invert(1);
 	    filter: invert(1);

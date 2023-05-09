@@ -46,10 +46,10 @@
                             href="#install">Installation</a>
                     </li>
                     <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
-                        href="#net_open">Open existing network</a>
+                        href="#net_new">Build a network</a>
                     </li>
                     <li class="nav-item mx-0 mx-lg-1"><a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger"
-                        href="#net_new">Build from scratch</a>
+                        href="#prop_new">Define properties</a>
                     </li>
                 </ul>
             </div>
@@ -71,6 +71,9 @@
                 CoCoNet supports ONNX and pyTorch formats using the operators in the VNN-LIB standard.</br>
                 This guide shows how to install, setup and use CoCoNet for the exchange of neural network models.</br>
             </p>
+            <div class="text-center">
+              <img class="img-overview" src="assets/img/tutorials/coconet/overview.png"></img>
+            </div>
         </div>
     </header>
 
@@ -111,7 +114,8 @@
                   </li>
                     <p>
                       Since the Python packages needed are incompatible with "Python for ARM Platform" you can install miniforge for arm64
-                      (Apple Silicon) and create a x86 Python virtual environment. Create a new environment using Python 3.9.5 and activate it</br>
+                      (Apple Silicon) and create a x86 Python virtual environment.</br> 
+                      Create a new environment using Python 3.9.5 and activate it</br>
                       <code>
                         $ conda create -n myenv python=3.9.5</br>
                         $ conda activate myenv
@@ -126,7 +130,8 @@
                 </ul>
 
                 CoCoNet is a GUI for constructing and converting Neural Networks, but it also provides a simple CLI usage
-                for checking whether a NN is compliant with VNN-LIB and quick-converting networks in the ONNX format. Typing</br>
+                for checking whether a NN is compliant with VNN-LIB and quick-converting networks in the ONNX format.</br>
+                Typing</br>
                 <code>
                   python CoCoNet/coconet.py -h
                 </code></br>
@@ -136,80 +141,93 @@
       </div>
     </section>
 
-    <!-- OPEN SECTION -->
-    <section class="page-section bg-primary text-white mb-0" id="net_open">
+    <!-- BUILD SECTION -->
+    <section class="page-section bg-primary text-white mb-0" id="net_new">
       <div class="container">
         <div class="text-center">
-            <h2 class="page-section-heading d-inline-block text-white">Open existing network</h2>
+            <h2 class="page-section-heading d-inline-block text-white">Build a network</h2>
         </div>
         <!-- Icon Divider-->
         <div class="divider-custom divider-light">
             <div class="divider-custom-line"></div>
-            <div class="divider-custom-icon"><i class="fas fa-folder-open"></i></div>
+            <div class="divider-custom-icon"><i class="fas fa-wrench"></i></div>
             <div class="divider-custom-line"></div>
         </div>
-        <div class="text-left font-large">
-          <div class="text-left lead">
-            <p>
-              In progress...
-            </p>
-          </div>
+        <!-- Section content -->
+        <div class="text-left lead">
+          <p>
+            <h4>Run CoCoNet</h4></br>
+            <div class="text-center">
+              <img class="img-tutorial" src="assets/img/tutorials/coconet/coconet_launch.png"></img>
+            </div>
+            Upon running CoCoNet, there are always two blocks for defining the input and the output of the network:
+            <ul>
+              <li>The <i>Input</i> block is used to set the input identifier and the expected input dimension of the network, while
+                the <i>Output</i> block is used only to set the output identifier; the output dimension will be displayed as it is
+                computed by the layers</li>
+              <li>The <strong>Name</strong> field is of type string</li>
+              <li>The <strong>Dimension</strong> field is either a single digit - for single-dimensional inputs - or a list of 
+                comma-separated values - for multi-dimensional inputs</li>
+              <li>The <strong>Property</strong> box is used to select the property to add to the network</li>
+            </ul></br>
+
+            <h4>Add layers</h4></br>
+            <div class="text-center">
+              <img class="img-tutorial" src="assets/img/tutorials/coconet/add_a_block.png"></img>
+            </div>
+            The left toolbar displays the available layers for building a network. Clicking on a layer button automatically
+            adds a new layer to the network with default parameters. When a block is displayed, it is possible to update the
+            parameters only if it is the last layer of the network in order to guarantee the consistency: for this reason,
+            layers should be added and their parameters defined before continuing. Only when the <i>Save</i> button is pressed the
+            layer parameters are updated.</br>
+            Clicking the <i>Restore defaults</i> button will reset the default values of the layer but will not update the
+            network until <i>Save</i> is pressed again.</br></br>
+
+            <h4>Delete network and layers</h4></br>
+            It is possible to delete single and multiple blocks using the Backspace key, but only if they are terminal. 
+            Trying to delete a layer between others will prompt the user to delete all subsequent layers.</br>
+            For clearing the workspace and deleting the whole network, it is possible to use the corresponding menu voice
+            in the <i>Edit</i> tab or with the Ctrl+Shift+C keyboard shortcut.
+          </p>
         </div>
+    </div>
       </div>
     </section>
 
-    <!-- BUILD SECTION -->
-    <section class="page-section" id="net_new">
+    <!-- PROPERTY SECTION -->
+    <section class="page-section" id="prop_new">
         <div class="container">
             <!-- Contact Section Heading-->
             <div class="text-center">
-                <h2 class="page-section-heading text-secondary d-inline-block mb-0">Build from scratch</h2>
+                <h2 class="page-section-heading text-secondary d-inline-block mb-0">Define properties</h2>
             </div>
             <!-- Icon Divider-->
             <div class="divider-custom">
                 <div class="divider-custom-line"></div>
-                <div class="divider-custom-icon"><i class="fas fa-wrench"></i></div>
+                <div class="divider-custom-icon"><i class="fas fa-cogs"></i></div>
                 <div class="divider-custom-line"></div>
             </div>
-            <!-- Contact Section Content-->
+            <!-- Section Content-->
             <div class="text-left lead">
               <p>
-                <h4>Run CoCoNet</h4></br>
-                <div class="text-center">
-                  <img src="assets/img/tutorials/coconet/input_block.png"></img>
-                  <img src="assets/img/tutorials/coconet/output_block.png"></img>
-                </div>
-                Upon running CoCoNet, there are always two blocks for defining the input and the output of the network:
+                <h4>Property templates</h4></br>
+                It is possible to define <a href="https://www.vnnlib.org" target="_blank">VNN-LIB</a> properties to the network using the corresponding
+                button in the input or output blocks. The combo-box allows to choose between the following:
                 <ul>
-                  <li>The <i>Input</i> block is used to set the input identifier and the expected input dimension of the network, while
-                    the <i>Output</i> block is used only to set the output identifier; the output dimension will be displayed as it is
-                    computed by the layers</li>
-                  <li>The <strong>Name</strong> field is of type string</li>
-                  <li>The <strong>Dimension</strong> field is either a single digit - for single-dimensional inputs - or a list of 
-                    comma-separated values - for multi-dimensional inputs</li>
-                  <li>The <strong>Property</strong> box is used to select the property to add to the network</li>
-                </ul></br>
-
-                <h4>Add layers</h4></br>
+                  <li>A <i>Generic SMT</i> property, that is used to write plain SMT-LIB</li>
+                  <li>A <i>Polyhedral</i> property, that provides a controlled environment for bounding input or output variables</li>
+                </ul>
+                Each property opens a dialog to define and validate the property. The <i>Generic SMT</i> property dialog is simply a text area to write on.
                 <div class="text-center">
-                  <img src="assets/img/tutorials/coconet/add_a_block.png"></img>
+                  <img class="img-tutorial" src="assets/img/tutorials/coconet/genericsmt_prop.png"></img>
                 </div>
-                The left toolbar displays the available layers for building a network. Clicking on a layer button automatically
-                adds a new layer to the network with default parameters. When a block is displayed, it is possible to update the
-                parameters only if it is the last layer of the network in order to guarantee the consistency: for this reason,
-                layers should be added and their parameters defined before continuing. Only when the <i>Save</i> button is pressed the
-                layer parameters are updated.</br>
-                Clicking the <i>Restore defaults</i> button will reset the default values of the layer but will not update the
-                network until <i>Save</i> is pressed again.</br></br>
-
-                <h4>Delete network and layers</h4></br>
-                It is possible to delete single and multiple blocks using the Backspace key, but only if they are terminal. 
-                Trying to delete a layer between others will prompt the user to delete all subsequent layers.</br>
-                For clearing the workspace and deleting the whole network, it is possible to use the corresponding menu voice
-                in the <i>Edit</i> tab or with the Ctrl+Shift+C keyboard shortcut.
+                The <i>Polyhedral</i> property dialog shows a selector for the variables, filled with the corresponding input or output values, a selector
+                for the relational operator and a field for providing a bounding value.
+                <div class="text-center">
+                  <img class="img-tutorial" src="assets/img/tutorials/coconet/polyhedral_prop.png"></img>
+                </div>
               </p>
             </div>
-        </div>
     </section>
 
     <footer class="footer text-center">
