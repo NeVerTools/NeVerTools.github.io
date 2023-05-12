@@ -67,16 +67,23 @@ body {
 }
 
 img.img-overview {
-    width: 850px;
+    width: 90%;
     height: auto;
     margin-top: 50px;
     border-radius: 15px;
 }
 
 img.img-tutorial {
-    width: 600px;
+    width: 50%;
     margin-top: 20px;
     margin-bottom: 20px;
+    border-radius: 15px;
+}
+
+img.img-property {
+    width: 100%;
+    height: auto;
+    margin-top: 20px;
     border-radius: 15px;
 }
 

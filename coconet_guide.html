@@ -184,10 +184,11 @@
             network until <i>Save</i> is pressed again.</br></br>
 
             <h4>Delete network and layers</h4></br>
-            It is possible to delete single and multiple blocks using the Backspace key, but only if they are terminal. 
-            Trying to delete a layer between others will prompt the user to delete all subsequent layers.</br>
+            It is possible to delete single and multiple blocks using the <i>Delete</i> key, but only if they are at the end of
+            the network. In order to keep consistency, trying to delete a layer between others will prompt the user to delete 
+            all the subsequent layers.</br>
             For clearing the workspace and deleting the whole network, it is possible to use the corresponding menu voice
-            in the <i>Edit</i> tab or with the Ctrl+Shift+C keyboard shortcut.
+            in the <i>Edit</i> tab or with the <i>Ctrl+Shift+C</i> keyboard shortcut.
           </p>
         </div>
     </div>
@@ -211,21 +212,29 @@
             <div class="text-left lead">
               <p>
                 <h4>Property templates</h4></br>
-                It is possible to define <a href="https://www.vnnlib.org" target="_blank">VNN-LIB</a> properties to the network using the corresponding
-                button in the input or output blocks. The combo-box allows to choose between the following:
+                It is possible to define <a href="https://www.vnnlib.org" target="_blank">VNN-LIB</a> properties on the network by using 
+                the corresponding button on the input or output blocks. The combo-box allows to choose between the following:
                 <ul>
-                  <li>A <i>Generic SMT</i> property, that is used to write plain SMT-LIB</li>
+                  <li>A <i>Generic SMT</i> property, that is used to write in plain SMT-LIB</li>
                   <li>A <i>Polyhedral</i> property, that provides a controlled environment for bounding input or output variables</li>
                 </ul>
-                Each property opens a dialog to define and validate the property. The <i>Generic SMT</i> property dialog is simply a text area to write on.
+                Each property opens a dialog to define and validate the property. The <i>Generic SMT</i> property dialog is simply a 
+                text area to write on.
                 <div class="text-center">
                   <img class="img-tutorial" src="assets/img/tutorials/coconet/genericsmt_prop.png"></img>
                 </div>
-                The <i>Polyhedral</i> property dialog shows a selector for the variables, filled with the corresponding input or output values, a selector
-                for the relational operator and a field for providing a bounding value.
+                The <i>Polyhedral</i> property dialog shows a selector for the variables, filled with the corresponding input or output 
+                values, a selector for the relational operator and a field for providing a bounding value.
                 <div class="text-center">
                   <img class="img-tutorial" src="assets/img/tutorials/coconet/polyhedral_prop.png"></img>
                 </div>
+
+                <h4>Property blocks</h4></br>
+                When the properties are defined, a corresponding block is displayed, attached to the input or output block. The
+                <i>Edit</i> button allows to modify the content of the property, but not to change the property type.
+                <div class="text-center">
+                  <img class="img-property" src="assets/img/tutorials/coconet/properties.png"></img>
+                </div>               
               </p>
             </div>
     </section>
