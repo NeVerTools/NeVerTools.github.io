@@ -80,7 +80,14 @@ img.img-tutorial {
     border-radius: 15px;
 }
 
-img.img-property {
+img.img-tutorial-wide {
+    width: 70%;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 15px;
+}
+
+img.img-tutorial-full {
     width: 100%;
     height: auto;
     margin-top: 20px;

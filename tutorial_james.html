@@ -33,77 +33,7 @@
     <link rel="stylesheet" href="css/body.css">
 
     <!-- Custom CSS-->
-    <style>
-        pre {
-            font-family: Consolas,"courier new";
-            font-size: 105%;
-            color: #dee2e6;
-            background-color: #2c3e50;
-            padding: 7px 14px;
-            border-radius: 5px;
-        }
-
-        .useful-link{
-            color: inherit;
-            text-decoration: underline;
-            font-family: SB Heading, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, Noto Sans, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
-            font-weight: 600;
-            line-height: 1.2;
-        }
-
-        .code-instructions {
-            padding-bottom: 4px;
-        }
-
-        .responsive {
-            width: 100%;
-            max-width: 110%;
-            height: auto;
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .font-large {
-            font-size:large;
-        }
-
-        .float-right {
-            float:right;
-        }
-        .center {
-            display: block;
-            margin-left: auto;
-            margin-right: auto;
-            padding-bottom: 5%;
-        }
-        .titles-tutorial {
-            text-align: center !important;
-            padding: 5%;
-        }
-
-        .flex-center {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .blue-font {
-            color: #2c3e50;
-        }
-        #train, #overview {
-            color: #2c3e50;
-        }
-        #train b {
-            color: #2c3e50;
-            font-size:115%;
-        }
-
-        #overview p, #build p, #train p, #verify p {
-            font-size: 1.25rem;
-            font-weight: 300;
-        }
-
-    </style>
+    <link rel="stylesheet" href="css/tutorials.css">
 </head>
 
 <body id="page-top">
@@ -133,7 +63,7 @@
     <header class="masthead bg-primary text-white text-center">
         <div class="container d-flex align-items-center flex-column">
             <!-- Masthead Heading-->
-            <h1 class="masthead-heading mb-0">James tutorial</h1>
+            <h1 class="masthead-heading mb-0">James</h1>
             <!-- Icon Divider-->
             <div class="divider-custom divider-light">
                 <div class="divider-custom-line"></div>
@@ -142,11 +72,10 @@
             </div>
             <!-- Masthead Subheading-->
                 <p class="masthead-subheading font-weight-light mb-0">
-                  James is the name of a humanoid robot project developed by University of Genoa and Italian Institute of Technology (IIT),
-                  intended to operate in the context of object manipulation. The dataset used here is a collection composed of 8 inputs and 6 outputs:
-                  the eight inputs consist of two vectors of four elements each, one related to the velocity and the other to the angle of the shoulder
-                  and elbow joints. The six outputs are the corresponding values of internal forces and torques in a Cartesian space.
-                  These data are meant to detect potentially unsafe situations, e.g., contact with obstacles or humans.
+                    James is the name of a humanoid robot project developed by University of Genoa and Italian Institute of Technology (IIT).
+                    The neural network controller for the arm of the robot consists of 8 inputs and 6 outputs: the input consists of two 
+                    vectors of four elements each, one related to the velocity and the other to the angle of the shoulder and elbow joints. 
+                    The outputs are the corresponding values of internal forces and torques in a Cartesian space.
               </p>
         </div>
     </header>
@@ -156,7 +85,7 @@
         <div class="container">
             <!-- Portfolio Section Heading -->
             <div class="text-center">
-                <h2 class="page-section-heading text-secondary mb-0 d-inline-block">Network Overview</h2>
+                <h2 class="page-section-heading text-secondary mb-0 d-inline-block">Overview</h2>
             </div>
             <!-- Icon Divider -->
             <div class="divider-custom">
@@ -167,10 +96,11 @@
 			<!-- Example Section Content -->
 			<div class="text-center">
                 <div id="overview-description">
-                    <p>The picture below shows the formal representation of the linear Neural Network for this dataset.
-                    The architecture consists of 3 hidden layers with ReLU activation functions and a decreasing
-                    number of neurons, namely 64, 32 and 16.<br>
-                    This network takes as input a 1D vector of 8 elements and outputs a 1D vector of 6 elements.</p>
+                    <p>
+                        The picture below shows the formal representation of the feed-forward neural network for this example.
+                        The architecture consists of 3 hidden layers with ReLU activation functions and a decreasing
+                        number of neurons, namely 64, 32 and 16.
+                    </p>
                 </div>
                 <br>
                 <img class="responsive" src="./assets/img/tutorials/james/formal_graph.png" alt="Convolutional diagram">
@@ -183,7 +113,7 @@
         <div class="container">
             <!-- Contact Section Heading-->
             <div class="text-center">
-                <h2 class="page-section-heading d-inline-block text-white">Network Construction</h2>
+                <h2 class="page-section-heading d-inline-block text-white">Network building</h2>
             </div>
             <!-- Icon Divider-->
             <div class="divider-custom divider-light">
@@ -197,63 +127,38 @@
                     <br>
                     <div>
                         <p class="lead">
-                          In NeVer2 you can select the necessary blocks from the left toolbar;
-                          the requested nodes will appear on the canvas with default parameters.
-                          You can drag and drop them to any position in the canvas.
-                          To edit their parameters you can just double-click or right-click -> "Edit", while
-                          to delete them you can press DEL or right-click -> "Delete".
+                            NeVer2 allows to add sequential layers directly by clicking on the corresponding buttons in the left toolbar.
+                            The layer block will be placed in the correct position with default parameters which can be edited directly.
+                            Note that adding a layer will block the editing of previous layers to maintain consistency. It is always possible
+                            to remove nodes at the end of a network with the "DEL" key. This also applies to the input block, where it is
+                            possible to change the input identifier and to set the number of inputs of the network.
                         </p>
-                        <div class="center flex-center">
-                          <img style="padding-right: 10%;" src="./assets/img/tutorials/common/toolbar.png" alt="Right-Click menu options">
-                          <img src="./assets/img/tutorials/common/options.png" alt="Right-Click menu options">
+                        <div class="text-center">
+                          <img class="img-tutorial" src="./assets/img/tutorials/common/nodes_toolbar.png" alt="Toolbar"></img>
                         </div>
                     </div>
                     <br>
                     <div>
                         <p>
-                          The first layer is defined by a Fully Connected block, with the parameters defined as in the example;
-                          the input shape is 8 and the <i>out_features</i> parameter is set to 64, i.e., the dimension of the
-                          first hidden layer.
+                            The first block is a Fully Connected layer consisting of 64 neurons. To do so, it is sufficient to set the
+                            <i>out_features</i> parameter to 64 and to click on <i>Save</i>.
                         </p>
-                        <div class="center flex-center">
-                            <img style="padding-right: 10%;" src="./assets/img/tutorials/james/input.png" alt="edit Fully Connected block">
-                            <img src="./assets/img/tutorials/james/fc.png" alt="Fully Connected block">
+                        <div class="text-center">
+                            <img class="img-tutorial" src="./assets/img/tutorials/james/first_layer.png" alt="Fully Connected block"></img>
                         </div>
                     </div>
                     <br>
                     <div>
                         <p>
-                          After this you can add a ReLU block as an activation function. You can connect the two blocks
-                          activating the drawing mode with the "Draw Line" button in the top-left corner or by pressing the CTRL+D
-                          shortcut and clicking first on the starting block and then on the next block.
+                            To add the other layers we select the corresponding block in the left toolbar. ReLU activation functions have
+                            no parameters and new Fully Connected layers can be added directly. In the example below it is presented the
+                            complete network. In this example it is also visible how the last layer computes the output which is then
+                            shown in the output block.
                         </p>
-                        <div class="center flex-center">
-                            <img style="padding-right: 10%;" src="./assets/img/tutorials/common/drawLine.png" alt="Toolbar with highlighted Draw Line button">
-                            <img src="./assets/img/tutorials/james/net1.png" alt="FC and ReLU NeVer2">
+                        <div class="text-center">
+                            <img class="img-tutorial-full" src="./assets/img/tutorials/james/james_net.png" alt="James network"></img>
                         </div>
 
-                    </div>
-                    <br>
-                    <div>
-                        <p>
-                          For the next layer you can add a new Fully Connected block with the <i>out_features</i> parameter
-                          set to 32, and connecting it to the first ReLU node. Now the <i>in_features</i>
-                          parameter of the second Fully Connected node is updated with the ReLU output value (64).
-                        </p>
-                        <div class="center flex-center">
-                            <img src="./assets/img/tutorials/james/net2.png" alt="Hidden layer">
-                        </div>
-                    </div>
-                    <br>
-                    <div>
-                        <p>
-                          The sequence of Fully Connected and ReLU nodes is repeated with the structure presented in the
-                          beginning. At the end of the last ReLU node you can finally add the Fully Connected output layer,
-                          and set the <i>out_features</i> parameter to 6.
-                        </p>
-                        <div class="center flex-center">
-                            <img class="responsive" src="./assets/img/tutorials/james/network_complete.png" alt="Feed-forward NN">
-                        </div>
                     </div>
                 </div>
             </div>
@@ -276,54 +181,53 @@
             <!-- Contact Section Content-->
             <div class="text-left font-large">
                 <div id="train-network">
-                    <br>
                     <div>
-                        <p>
-                          Once the network is completed, you can train it. In the menu bar select "Learn..." -> "Train":
-                          the training window appears, where you can select the dataset and the learning parameters.
-                          We made available the most common datasets directly in the application, but in order to load a
-                          custom dataset some additional steps are required. By selecting <i>Custom Data Source...</i>
-                          in the Dataset box you can load the corresponding file, and fill the dataset parameters dialog.
-                          </br></br>
-                          <img class="center" src="./assets/img/tutorials/james/dataset_load.png" alt="Dataset loading">
-                          In particular, the <i>Target index</i> is the separator between input and output data, i.e.,
-                          the number of inputs. The data type is controlled by a combo box and the delimiter character is
-                          set by default to a comma.
-                        </p>
-                        <img class="center" src="./assets/img/tutorials/james/training_setup.png" alt="Training parameters of the network">
-                        <p>
-                          The learning parameters can be set as follows:<br><br>
-                          <b><i>Optimizer</i></b>: at the moment only "Adam" (adaptive moment estimation) is supported, being
-                          the most popular and effective gradient based optimization algorithm. Once selected, you can edit all
-                          its related parameters.<br><br>
-                          <b><i>Learning Rate Scheduler</i></b>: like the Optimizer, only "ReduceLROnPlateau" is supported. It adjusts the
-                          learning rate only when a plateau in model performance is detected, e.g. no change for a given number of
-                          training epochs.<br><br>
-                          <b><i>Loss Function</i></b>: you can choose between "Cross Entropy" and "MSE Loss", depending on the network
-                          structure.<br><br>
-                          <b><i>Precision Metric</i></b>: you can choose between "Inaccuracy" and "MSE loss".<br><br>
-                          <b><i>Epochs</i></b>: it defines the steps that the learning algorithm will perform through the training process.
-                          <br><br>
-                          <b><i>Validation Percentage</i></b>: (a number between 0 and 1) indicates the percentage of the dataset to use
-                          as the validation set.<br><br>
-                          <b><i>Training batch size</i></b> and <b><i>Validation batch size</i></b>: it defines the dimension of the
-                          training batches.<br><br>
-                          <b><i>Cuda</i></b>: it allows to take advantage of NVidia GPU architecture for the computation.<br><br>
-                          <b><i>Train patience</i></b> <i>(optional)</i>: the number of epochs in which the loss may not decrease
-                          before the training procedure is interrupted with early stopping.<br><br>
-                          <b><i>Checkpoints root</i></b> <i>(optional)</i>: where to store the checkpoints of the training strategy, by
-                          default the working directory of NeVer2.<br><br>
-                          <b><i>Verbosity level</i></b> <i>(optional)</i>: how many batches between training log prints (default 1).
-                        </p>
+                        Once the network is completed, you can train it. In the menu bar select "Learn..." -> "Train":
+                        the training window appears, where you can select the dataset and the learning parameters.
+                        We made available the most common datasets directly in the application, but in order to load a
+                        custom dataset some additional steps are required. By selecting <i>Custom Data Source...</i>
+                        in the Dataset box you can load the corresponding file, and fill the dataset parameters dialog.
+                        <div class="text-center">
+                            <img class="img-tutorial" src="./assets/img/tutorials/james/dataset_load.png" alt="Dataset loading"></img>
+                        </div>
+                        In particular, the <i>Target index</i> is the separator between input and output data, i.e.,
+                        the number of inputs. The data type is controlled by a combo box and the delimiter character is
+                        set by default to a comma.
+                        <div class="text-center">
+                            <img class="img-tutorial-wide" src="./assets/img/tutorials/james/training_setup.png" alt="Training parameters of the network"></img>
+                        </div>
+                        The learning parameters can be set as follows:<br><br>
+                        <b><i>Optimizer</i></b>: at the moment only "Adam" (adaptive moment estimation) is supported, being
+                        the most popular and effective gradient based optimization algorithm. Once selected, you can edit all
+                        its related parameters.<br><br>
+                        <b><i>Learning Rate Scheduler</i></b>: like the Optimizer, only "ReduceLROnPlateau" is supported. It adjusts the
+                        learning rate only when a plateau in model performance is detected, e.g. no change for a given number of
+                        training epochs.<br><br>
+                        <b><i>Loss Function</i></b>: you can choose between "Cross Entropy" and "MSE Loss", depending on the network
+                        structure.<br><br>
+                        <b><i>Precision Metric</i></b>: you can choose between "Inaccuracy" and "MSE loss".<br><br>
+                        <b><i>Epochs</i></b>: it defines the steps that the learning algorithm will perform through the training process.
+                        <br><br>
+                        <b><i>Validation Percentage</i></b>: (a number between 0 and 1) indicates the percentage of the dataset to use
+                        as the validation set.<br><br>
+                        <b><i>Training batch size</i></b> and <b><i>Validation batch size</i></b>: it defines the dimension of the
+                        training batches.<br><br>
+                        <b><i>Cuda</i></b>: it allows to take advantage of NVidia GPU architecture for the computation.<br><br>
+                        <b><i>Train patience</i></b> <i>(optional)</i>: the number of epochs in which the loss may not decrease
+                        before the training procedure is interrupted with early stopping.<br><br>
+                        <b><i>Checkpoints root</i></b> <i>(optional)</i>: where to store the checkpoints of the training strategy, by
+                        default the working directory of NeVer2.<br><br>
+                        <b><i>Verbosity level</i></b> <i>(optional)</i>: how many batches between training log prints (default 1).
                     </div>
                     <br>
                     <div>
                         <p>
-                          Once the parameters are set, clicking "Train Network" runs the training. Logs are printed in a box
-                          below the buttons.
+                            Once the parameters are set, clicking "Train Network" runs the training. Logs are printed in a box
+                            below the buttons.
+                            <div class="text-center">
+                                <img class="img-tutorial" src="./assets/img/tutorials/james/training_loss.png" alt="Training Results"></img>
+                            </div>
                         </p>
-                        <br>
-                        <img class="center" src="./assets/img/tutorials/james/training_loss.png" alt="Training Results">
                     </div>
                     <div>
                         <p>
@@ -332,7 +236,7 @@
                           at the following diagram shows how increasing the training epochs improves slightly
                           the training loss.
                         </p>
-                        <img class="center" src="./assets/img/tutorials/james/james_loss.png" width="60%" alt="Training Loss">
+                        <img class="center" src="./assets/img/tutorials/james/james_loss.png" width="60%" alt="Training Loss"></img>
                     </div>
                 </div>
             </div>
