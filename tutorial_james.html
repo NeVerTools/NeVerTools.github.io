@@ -182,17 +182,15 @@
             <div class="text-left font-large">
                 <div id="train-network">
                     <div>
-                        Once the network is completed, you can train it. In the menu bar select "Learn..." -> "Train":
-                        the training window appears, where you can select the dataset and the learning parameters.
-                        We made available the most common datasets directly in the application, but in order to load a
-                        custom dataset some additional steps are required. By selecting <i>Custom Data Source...</i>
-                        in the Dataset box you can load the corresponding file, and fill the dataset parameters dialog.
+                        Once the network is completed, it is time to train it on the dataset. In the menu bar, selecting 
+                        "Learn..." -> "Train" displays the window for the training setup. The first thing to do is to select
+                        the dataset: we made directly available the MNIST and Fashion MNIST datasets, but it is possible to
+                        open any dataset as a text file selecting "Custom data source...".
                         <div class="text-center">
                             <img class="img-tutorial" src="./assets/img/tutorials/james/dataset_load.png" alt="Dataset loading"></img>
                         </div>
-                        In particular, the <i>Target index</i> is the separator between input and output data, i.e.,
-                        the number of inputs. The data type is controlled by a combo box and the delimiter character is
-                        set by default to a comma.
+                        In order to process correctly the dataset, it is required to provide information on the <i>Data type</i>
+                        to expect and the <i>Delimiter</i> character, which are set by default as <i>float</i> and '<i>,</i>'.
                         <div class="text-center">
                             <img class="img-tutorial-wide" src="./assets/img/tutorials/james/training_setup.png" alt="Training parameters of the network"></img>
                         </div>
