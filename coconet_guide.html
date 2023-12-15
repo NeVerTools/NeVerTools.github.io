@@ -189,6 +189,7 @@
             all the subsequent layers.</br>
             For clearing the workspace and deleting the whole network, it is possible to use the corresponding menu voice
             in the <i>Edit</i> tab or with the <i>Ctrl+Shift+C</i> keyboard shortcut.
+
           </p>
         </div>
     </div>
@@ -217,6 +218,9 @@
                 <ul>
                   <li>A <i>Generic SMT</i> property, that is used to write in plain SMT-LIB</li>
                   <li>A <i>Polyhedral</i> property, that provides a controlled environment for bounding input or output variables</li>
+                  <li>A <i>Box</i> property, that provides a way to define all the lower and upper bounds for the variables</li>
+                  <li>A <i>Classification</i> property, only for the output node, that provides a way to specifying whether an output
+                    variable should be minimized or maximized</li>
                 </ul>
                 Each property opens a dialog to define and validate the property. The <i>Generic SMT</i> property dialog is simply a 
                 text area to write on.
@@ -231,7 +235,8 @@
 
                 <h4>Property blocks</h4></br>
                 When the properties are defined, a corresponding block is displayed, attached to the input or output block. The
-                <i>Edit</i> button allows to modify the content of the property, but not to change the property type.
+                <i>Edit</i> button allows to modify the content of the property, while to change the property type it is required
+                to select a new property from the output block combo box.
                 <div class="text-center">
                   <img class="img-tutorial-full" src="assets/img/tutorials/coconet/properties.png"></img>
                 </div>               
