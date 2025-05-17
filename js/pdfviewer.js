@@ -1,7 +1,7 @@
 // If absolute URL from the remote server is provided, configure the CORS
 // header on that server.
 // TODO maybe look for a better approach (maybe load the file as a binary)
-let url = 'https://raw.githubusercontent.com/NeVerTools/NeVerTools.github.io/master/assets/doc/slides.pdf';
+let url = 'https://raw.githubusercontent.com/NeVerTools/NeVerTools.github.io/master/assets/doc/never2.pdf';
 
 // Loaded via <script> tag, create shortcut to access PDF.js exports.
 let pdfjsLib = window['pdfjs-dist/build/pdf'];
@@ -10,7 +10,7 @@ let pdfjsLib = window['pdfjs-dist/build/pdf'];
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.js';
 
 // Changes the page dimensions
-let scale = 2;
+let scale = 1.5;
 
 // Asynchronous download of PDF
 let loadingTask = pdfjsLib.getDocument(url);
