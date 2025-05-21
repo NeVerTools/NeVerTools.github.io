@@ -3,10 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" data-content_root="../">
 <head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
-
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Installation and Setup &mdash; pyNeVer 1.1.4 documentation</title>
+  <title>Overview: module code &mdash; pyNeVer 1.1.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -18,9 +17,7 @@
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="Networks" href="../API/0_Networks.html" />
-    <link rel="prev" title="pyNeVer" href="../index.html" /> 
+    <link rel="search" title="Search" href="../search.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,8 +40,8 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Setup</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Installation and Setup</a></li>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Setup/setup.html">Installation and Setup</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul>
@@ -68,9 +65,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Installation and Setup</li>
+      <li class="breadcrumb-item active">Overview: module code</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/Setup/setup.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -78,40 +74,17 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="installation-and-setup">
-<h1>Installation and Setup<a class="headerlink" href="#installation-and-setup" title="Link to this heading"></a></h1>
-<p><strong>pyNeVer</strong> depends on several packages, which are all available via <code class="docutils literal notranslate"><span class="pre">pip</span></code> and should be installed automatically.
-The packages required for the correct execution are the following:</p>
-<ul class="simple">
-<li><p><em>numpy</em></p></li>
-<li><p><em>ortools</em></p></li>
-<li><p><em>onnx</em></p></li>
-<li><p><em>torch</em></p></li>
-<li><p><em>torchvision</em></p></li>
-<li><p><em>pysmt</em></p></li>
-<li><p><em>multipledispatch</em></p></li>
+  <h1>All modules for which code is available</h1>
+<ul><li><a href="pynever/networks.html">pynever.networks</a></li>
+<li><a href="pynever/nodes.html">pynever.nodes</a></li>
+<li><a href="pynever/strategies/conversion/converters/onnx.html">pynever.strategies.conversion.converters.onnx</a></li>
+<li><a href="pynever/strategies/conversion/representation.html">pynever.strategies.conversion.representation</a></li>
+<li><a href="pynever/strategies/training.html">pynever.strategies.training</a></li>
 </ul>
-<p>To install <strong>pyNeVer</strong> as an API, run the command:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>pynever
-</pre></div>
-</div>
-<p>To run <strong>pyNeVer</strong> as a standalone tool you should clone this repository and create a conda environment</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/nevertools/pyNeVer
-<span class="nb">cd</span><span class="w"> </span>pyNeVer
-
-conda<span class="w"> </span>env<span class="w"> </span>create<span class="w"> </span>-f<span class="w"> </span>environment.yml
-conda<span class="w"> </span>activate<span class="w"> </span>pynever
-</pre></div>
-</div>
-</section>
-
 
            </div>
           </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="pyNeVer" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../API/0_Networks.html" class="btn btn-neutral float-right" title="Networks" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
+          <footer>
 
   <hr/>
 

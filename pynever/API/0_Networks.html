@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Nodes" href="1_Nodes.html" />
-    <link rel="prev" title="Setup" href="../Setup/setup.html" /> 
+    <link rel="prev" title="Installation and Setup" href="../Setup/setup.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -44,7 +44,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Setup</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../Setup/setup.html">Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Setup/setup.html">Installation and Setup</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
@@ -122,20 +122,22 @@
              
   <section id="module-pynever.networks">
 <span id="networks"></span><h1>Networks<a class="headerlink" href="#module-pynever.networks" title="Link to this heading"></a></h1>
-<p>This module contains the definition and structure of our Neural Network representation</p>
+<p>This module contains the classes to define and create neural network objects.
+The abstract class <code class="docutils literal notranslate"><span class="pre">NeuralNetwork</span></code> represents a generic computational graph with layers as nodes and connections as edges.
+The children of <code class="docutils literal notranslate"><span class="pre">NeuralNetwork</span></code> are <code class="docutils literal notranslate"><span class="pre">SequentialNetwork</span></code> and <code class="docutils literal notranslate"><span class="pre">AcyclicNetwork</span></code>, to represent standard feed-forward NNs and residual NNs, respectively.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.networks.</span></span><span class="sig-name descname"><span class="pre">NeuralNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_ids</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.networks.</span></span><span class="sig-name descname"><span class="pre">NeuralNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-<p>An abstract class used for our internal representation of a generic NeuralNetwork. It consists of a graph of
-LayerNodes and a list of AlternativeRepresentations. It should be noted that this data structure it is not able
-to compute the input-output relation defined by the network. The properties of the computational graph are
-specialized in the concrete classes.</p>
+<p>An abstract class used for our internal representation of a generic Neural Network. It consists of a graph of
+<a class="reference internal" href="1_Nodes.html#pynever.nodes.LayerNode" title="pynever.nodes.LayerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LayerNode</span></code></a> objects and edges connecting them. It should be noted that this data structure is
+not able to compute the input-output relation defined by the network.
+The properties of the computational graph are specialized in the concrete classes.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.nodes">
 <span class="sig-name descname"><span class="pre">nodes</span></span><a class="headerlink" href="#pynever.networks.NeuralNetwork.nodes" title="Link to this definition"></a></dt>
-<dd><p>Dictionary containing str keys and LayerNodes values. It contains the nodes of the graph,
-the identifier of the node of interest is used as a key in the nodes’ dictionary.</p>
+<dd><p>Dictionary containing string keys and <a class="reference internal" href="1_Nodes.html#pynever.nodes.LayerNode" title="pynever.nodes.LayerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LayerNode</span></code></a> values.
+It contains the nodes of the graph, the identifier of the node is used as a key in the nodes’ dictionary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict[str, <a class="reference internal" href="1_Nodes.html#pynever.nodes.LayerNode" title="pynever.nodes.LayerNode">LayerNode</a>]</p>
@@ -146,8 +148,8 @@ the identifier of the node of interest is used as a key in the nodes’ dictiona
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.edges">
 <span class="sig-name descname"><span class="pre">edges</span></span><a class="headerlink" href="#pynever.networks.NeuralNetwork.edges" title="Link to this definition"></a></dt>
-<dd><p>Dictionary of LayerNode identifiers. It contains for each node identified by the keys, the list of nodes
-connected to it.</p>
+<dd><p>Dictionary of <a class="reference internal" href="1_Nodes.html#pynever.nodes.LayerNode" title="pynever.nodes.LayerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LayerNode</span></code></a> identifiers.
+It contains for each node identified by the keys, the list of nodes connected to it.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>dict[str, list[str]]</p>
@@ -158,7 +160,7 @@ connected to it.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.identifier">
 <span class="sig-name descname"><span class="pre">identifier</span></span><a class="headerlink" href="#pynever.networks.NeuralNetwork.identifier" title="Link to this definition"></a></dt>
-<dd><p>Identifier of the Sequential Neural Network.</p>
+<dd><p>Identifier of the Neural Network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>str</p>
@@ -169,7 +171,7 @@ connected to it.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.input_ids">
 <span class="sig-name descname"><span class="pre">input_ids</span></span><a class="headerlink" href="#pynever.networks.NeuralNetwork.input_ids" title="Link to this definition"></a></dt>
-<dd><p>Dictionary containing the inputs of the networks as keys and the corresponding layer identifier of the Node of
+<dd><p>Dictionary containing the inputs of the networks as keys and the corresponding layer identifier of the node of
 which they are the input.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -180,7 +182,7 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.is_empty">
-<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.is_empty" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">is_empty</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.is_empty"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.is_empty" title="Link to this definition"></a></dt>
 <dd><p>Procedure to check whether the network is empty.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -194,7 +196,7 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.is_acyclic">
-<span class="sig-name descname"><span class="pre">is_acyclic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.is_acyclic" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">is_acyclic</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.is_acyclic"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.is_acyclic" title="Link to this definition"></a></dt>
 <dd><p>Procedure to check whether the network is acyclic.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -208,7 +210,7 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.has_children">
-<span class="sig-name descname"><span class="pre">has_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.has_children" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">has_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.has_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.has_children" title="Link to this definition"></a></dt>
 <dd><p>Procedure to check if a node has children.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -225,7 +227,7 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_children">
-<span class="sig-name descname"><span class="pre">get_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_children" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_children</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_children"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_children" title="Link to this definition"></a></dt>
 <dd><p>Procedure to return the children of a node as a list of ConcreteLayerNodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -242,7 +244,7 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.has_parents">
-<span class="sig-name descname"><span class="pre">has_parents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.has_parents" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">has_parents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.has_parents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.has_parents" title="Link to this definition"></a></dt>
 <dd><p>Procedure to check if a node has parents.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -259,7 +261,7 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_parents">
-<span class="sig-name descname"><span class="pre">get_parents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_parents" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_parents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_parents"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_parents" title="Link to this definition"></a></dt>
 <dd><p>Procedure to return the parents of a node as a list of ConcreteLayerNodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -276,7 +278,7 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_input_id">
-<span class="sig-name descname"><span class="pre">get_input_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_input_id" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_input_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_input_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_input_id" title="Link to this definition"></a></dt>
 <dd><p>Procedure to return the input_id of the network, assuming there is a single input layer.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -290,11 +292,11 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_roots">
-<span class="sig-name descname"><span class="pre">get_roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_roots" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_roots</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_roots"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_roots" title="Link to this definition"></a></dt>
 <dd><p>Procedure to return the roots of the network as a list of ConcreteLayerNodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The roots of the network as a list of ConcreteLayerNodes.</p>
+<dd class="field-odd"><p>The roots of the network as a list of <a class="reference internal" href="1_Nodes.html#pynever.nodes.ConcreteLayerNode" title="pynever.nodes.ConcreteLayerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConcreteLayerNode</span></code></a> objects.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>list[<a class="reference internal" href="1_Nodes.html#pynever.nodes.ConcreteLayerNode" title="pynever.nodes.ConcreteLayerNode">ConcreteLayerNode</a>]</p>
@@ -304,11 +306,11 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_leaves">
-<span class="sig-name descname"><span class="pre">get_leaves</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_leaves" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_leaves</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_leaves"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_leaves" title="Link to this definition"></a></dt>
 <dd><p>Procedure to return the leaves of the network as a list of ConcreteLayerNodes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>The leaves of the network as a list of ConcreteLayerNodes.</p>
+<dd class="field-odd"><p>The leaves of the network as a list of <a class="reference internal" href="1_Nodes.html#pynever.nodes.ConcreteLayerNode" title="pynever.nodes.ConcreteLayerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConcreteLayerNode</span></code></a> objects.</p>
 </dd>
 <dt class="field-even">Return type<span class="colon">:</span></dt>
 <dd class="field-even"><p>list[<a class="reference internal" href="1_Nodes.html#pynever.nodes.ConcreteLayerNode" title="pynever.nodes.ConcreteLayerNode">ConcreteLayerNode</a>]</p>
@@ -318,7 +320,7 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_topological_order">
-<span class="sig-name descname"><span class="pre">get_topological_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_topological_order" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_topological_order</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_topological_order"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_topological_order" title="Link to this definition"></a></dt>
 <dd><p>Procedure to walk the network with a DFS and build the topological sort.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -335,9 +337,9 @@ which they are the input.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.layers_iterator">
-<span class="sig-name descname"><span class="pre">layers_iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.layers_iterator" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">layers_iterator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.layers_iterator"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.layers_iterator" title="Link to this definition"></a></dt>
 <dd><p>Procedure to build a generator for the layers of the network in sequential order.
-It allows to have an iterable interface when needed</p>
+It allows having an iterable interface when needed</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>offset</strong> (<em>int</em>) – Offset to start the generation</p>
@@ -353,7 +355,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_first_node">
-<span class="sig-name descname"><span class="pre">get_first_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_first_node" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_first_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_first_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_first_node" title="Link to this definition"></a></dt>
 <dd><p>Procedure to get the first ConcreteLayerNode of the network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -367,7 +369,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_next_node">
-<span class="sig-name descname"><span class="pre">get_next_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_next_node" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_next_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_next_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_next_node" title="Link to this definition"></a></dt>
 <dd><p>Procedure to get the next ConcreteLayerNode of the network given an input ConcreteLayerNode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -381,7 +383,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_previous_node">
-<span class="sig-name descname"><span class="pre">get_previous_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_previous_node" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_previous_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_previous_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_previous_node" title="Link to this definition"></a></dt>
 <dd><p>Procedure to get the previous ConcreteLayerNode of the network given an input ConcreteLayerNode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -395,7 +397,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_last_node">
-<span class="sig-name descname"><span class="pre">get_last_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_last_node" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_last_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_last_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_last_node" title="Link to this definition"></a></dt>
 <dd><p>Procedure to get the last ConcreteLayerNode of the network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -409,7 +411,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_input_len">
-<span class="sig-name descname"><span class="pre">get_input_len</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_input_len" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_input_len</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_input_len"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_input_len" title="Link to this definition"></a></dt>
 <dd><p>Procedure to count the number of inputs in in_dim</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -423,7 +425,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_output_len">
-<span class="sig-name descname"><span class="pre">get_output_len</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_output_len" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_output_len</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_output_len"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_output_len" title="Link to this definition"></a></dt>
 <dd><p>Procedure to count the number of outputs in out_dim</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -437,7 +439,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_id_from_index">
-<span class="sig-name descname"><span class="pre">get_id_from_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_id_from_index" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_id_from_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">index</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_id_from_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_id_from_index" title="Link to this definition"></a></dt>
 <dd><p>This method returns the identifier of the layer at the given index</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -454,7 +456,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_index_from_id">
-<span class="sig-name descname"><span class="pre">get_index_from_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_index_from_id" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_index_from_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_index_from_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_index_from_id" title="Link to this definition"></a></dt>
 <dd><p>This method returns the index of the layer with the given identifier</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -471,7 +473,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.get_previous_id">
-<span class="sig-name descname"><span class="pre">get_previous_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_previous_id" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">get_previous_id</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.get_previous_id"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.get_previous_id" title="Link to this definition"></a></dt>
 <dd><p>Procedure to get the identifier of the previous layer given another layer identifier</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -488,7 +490,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.layer_precedes">
-<span class="sig-name descname"><span class="pre">layer_precedes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_id1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_id2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.layer_precedes" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">layer_precedes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_id1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_id2</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.layer_precedes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.layer_precedes" title="Link to this definition"></a></dt>
 <dd><p>Procedure to check whether a given layer precedes another or not</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -508,7 +510,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.generic_add_node">
-<span class="sig-name descname"><span class="pre">generic_add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.generic_add_node" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">generic_add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_ids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.generic_add_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.generic_add_node" title="Link to this definition"></a></dt>
 <dd><p>Procedure to add a node to the network. A node cannot have both parents and inputs.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -524,7 +526,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.remove_node">
-<span class="sig-name descname"><span class="pre">remove_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.remove_node" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">remove_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.remove_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.remove_node" title="Link to this definition"></a></dt>
 <dd><p>Procedure to remove a node from the network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -535,7 +537,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.delete_last_node">
-<span class="sig-name descname"><span class="pre">delete_last_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.delete_last_node" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">delete_last_node</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.delete_last_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.delete_last_node" title="Link to this definition"></a></dt>
 <dd><p>Procedure to remove the last ConcreteLayerNode from the network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -549,7 +551,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.NeuralNetwork.count_relu_layers">
-<span class="sig-name descname"><span class="pre">count_relu_layers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.NeuralNetwork.count_relu_layers" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">count_relu_layers</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#NeuralNetwork.count_relu_layers"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.NeuralNetwork.count_relu_layers" title="Link to this definition"></a></dt>
 <dd><p>Procedure to count the number of ReLU layers.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns<span class="colon">:</span></dt>
@@ -565,7 +567,7 @@ It allows to have an iterable interface when needed</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.networks.SequentialNetwork">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.networks.</span></span><span class="sig-name descname"><span class="pre">SequentialNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.SequentialNetwork" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.networks.</span></span><span class="sig-name descname"><span class="pre">SequentialNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_id</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#SequentialNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.SequentialNetwork" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pynever.networks.NeuralNetwork" title="pynever.networks.NeuralNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNetwork</span></code></a></p>
 <p>Concrete child of NeuralNetwork representing a sequential NeuralNetwork.
 It consists of a graph of ConcreteLayerNodes. It should be noted that this data structure
@@ -573,12 +575,12 @@ is not able to compute the input-output relation defined by the network.
 The computational graph of a SequentialNetwork must correspond to a standard list.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.SequentialNetwork.append_node">
-<span class="sig-name descname"><span class="pre">append_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.SequentialNetwork.append_node" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">append_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#SequentialNetwork.append_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.SequentialNetwork.append_node" title="Link to this definition"></a></dt>
 <dd><p>Procedure to add a new ConcreteLayerNode.
 In a sequential network the new node must be connected directly to the previous node forming a list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>node</strong> (<a class="reference internal" href="1_Nodes.html#pynever.nodes.ConcreteLayerNode" title="pynever.nodes.ConcreteLayerNode"><em>ConcreteLayerNode</em></a>) – New node to add to the Sequential network.</p>
+<dd class="field-odd"><p><strong>node</strong> (<a class="reference internal" href="1_Nodes.html#pynever.nodes.ConcreteLayerNode" title="pynever.nodes.ConcreteLayerNode"><em>ConcreteLayerNode</em></a>) – New node to add to the <a class="reference internal" href="#pynever.networks.SequentialNetwork" title="pynever.networks.SequentialNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">SequentialNetwork</span></code></a>.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -587,18 +589,18 @@ In a sequential network the new node must be connected directly to the previous 
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.networks.AcyclicNetwork">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.networks.</span></span><span class="sig-name descname"><span class="pre">AcyclicNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_ids</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.AcyclicNetwork" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.networks.</span></span><span class="sig-name descname"><span class="pre">AcyclicNetwork</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identifier</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_ids</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#AcyclicNetwork"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.AcyclicNetwork" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pynever.networks.NeuralNetwork" title="pynever.networks.NeuralNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">NeuralNetwork</span></code></a></p>
 <p>Concrete child of NeuralNetwork representing an acyclic NeuralNetwork.
 The computational graph of an AcyclicNetwork must correspond to a standard list.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.networks.AcyclicNetwork.add_node">
-<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pynever.networks.AcyclicNetwork.add_node" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">add_node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/networks.html#AcyclicNetwork.add_node"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.networks.AcyclicNetwork.add_node" title="Link to this definition"></a></dt>
 <dd><p>Procedure to add a node to the network only if it preserves the acyclic property</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>node</strong> (<a class="reference internal" href="1_Nodes.html#pynever.nodes.ConcreteLayerNode" title="pynever.nodes.ConcreteLayerNode"><em>ConcreteLayerNode</em></a>) – The LayerNode to add</p></li>
+<li><p><strong>node</strong> (<a class="reference internal" href="1_Nodes.html#pynever.nodes.ConcreteLayerNode" title="pynever.nodes.ConcreteLayerNode"><em>ConcreteLayerNode</em></a>) – The <a class="reference internal" href="1_Nodes.html#pynever.nodes.LayerNode" title="pynever.nodes.LayerNode"><code class="xref py py-class docutils literal notranslate"><span class="pre">LayerNode</span></code></a> to add</p></li>
 <li><p><strong>parents</strong> (<em>list</em><em>[</em><a class="reference internal" href="1_Nodes.html#pynever.nodes.ConcreteLayerNode" title="pynever.nodes.ConcreteLayerNode"><em>ConcreteLayerNode</em></a><em>] </em><em>| </em><em>None</em>) – The new node parents, if existing</p></li>
 <li><p><strong>children</strong> (<em>list</em><em>[</em><a class="reference internal" href="1_Nodes.html#pynever.nodes.ConcreteLayerNode" title="pynever.nodes.ConcreteLayerNode"><em>ConcreteLayerNode</em></a><em>] </em><em>| </em><em>None</em>) – The new node children, if existing</p></li>
 </ul>
@@ -614,7 +616,7 @@ The computational graph of an AcyclicNetwork must correspond to a standard list.
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../Setup/setup.html" class="btn btn-neutral float-left" title="Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../Setup/setup.html" class="btn btn-neutral float-left" title="Installation and Setup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="1_Nodes.html" class="btn btn-neutral float-right" title="Nodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

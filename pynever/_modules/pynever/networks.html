@@ -1,0 +1,802 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pynever.networks &mdash; pyNeVer 1.1.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=00f267c6"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pyNeVer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Setup</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Setup/setup.html">Installation and Setup</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API/0_Networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/1_Nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/2_Training.html">Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/3_Conversion.html">Conversion</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyNeVer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pynever.networks</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pynever.networks</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the classes to define and create neural network objects.</span>
+<span class="sd">The abstract class ``NeuralNetwork`` represents a generic computational graph with layers as nodes and connections as edges.</span>
+<span class="sd">The children of ``NeuralNetwork`` are ``SequentialNetwork`` and ``AcyclicNetwork``, to represent standard feed-forward NNs and residual NNs, respectively.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">collections</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pynever.nodes</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nodes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynever.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">EmptyNetworkError</span><span class="p">,</span> <span class="n">InvalidNodeError</span><span class="p">,</span> <span class="n">NotInNetworkError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynever.nodes</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConcreteLayerNode</span>
+
+
+<div class="viewcode-block" id="NeuralNetwork">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">NeuralNetwork</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An abstract class used for our internal representation of a generic Neural Network. It consists of a graph of</span>
+<span class="sd">    :class:`~pynever.nodes.LayerNode` objects and edges connecting them. It should be noted that this data structure is</span>
+<span class="sd">    not able to compute the input-output relation defined by the network.</span>
+<span class="sd">    The properties of the computational graph are specialized in the concrete classes.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    nodes: dict[str, LayerNode]</span>
+<span class="sd">        Dictionary containing string keys and :class:`~pynever.nodes.LayerNode` values.</span>
+<span class="sd">        It contains the nodes of the graph, the identifier of the node is used as a key in the nodes&#39; dictionary.</span>
+<span class="sd">    edges: dict[str, list[str]]</span>
+<span class="sd">        Dictionary of :class:`~pynever.nodes.LayerNode` identifiers.</span>
+<span class="sd">        It contains for each node identified by the keys, the list of nodes connected to it.</span>
+<span class="sd">    identifier: str</span>
+<span class="sd">        Identifier of the Neural Network.</span>
+<span class="sd">    input_ids: dict[str, str | None]</span>
+<span class="sd">        Dictionary containing the inputs of the networks as keys and the corresponding layer identifier of the node of</span>
+<span class="sd">        which they are the input.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_ids</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span> <span class="kc">None</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">input_ids</span><span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">body</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_topological_order</span><span class="p">()]</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> : </span><span class="si">{</span><span class="n">body</span><span class="si">}</span><span class="s2">&quot;</span>
+
+<div class="viewcode-block" id="NeuralNetwork.is_empty">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.is_empty">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_empty</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to check whether the network is empty.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if there are no nodes in the network, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.is_acyclic">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.is_acyclic">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_acyclic</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to check whether the network is acyclic.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if network is acyclic, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">aux_network</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">root_nodes</span> <span class="o">=</span> <span class="n">aux_network</span><span class="o">.</span><span class="n">get_roots</span><span class="p">()</span>
+        <span class="n">topologically_sorted</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">root_nodes</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+
+            <span class="n">temp_node</span> <span class="o">=</span> <span class="n">root_nodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">root_nodes</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_node</span><span class="p">)</span>
+
+            <span class="n">topologically_sorted</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_node</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">child_node</span> <span class="ow">in</span> <span class="n">aux_network</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">temp_node</span><span class="p">):</span>
+                <span class="n">aux_network</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">temp_node</span><span class="o">.</span><span class="n">identifier</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">child_node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">aux_network</span><span class="o">.</span><span class="n">has_parents</span><span class="p">(</span><span class="n">child_node</span><span class="p">):</span>
+                    <span class="n">root_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">child_node</span><span class="p">)</span>
+
+        <span class="n">has_edges</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">start_node_id</span><span class="p">,</span> <span class="n">end_nodes_ids</span> <span class="ow">in</span> <span class="n">aux_network</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">end_nodes_ids</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">has_edges</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">return</span> <span class="ow">not</span> <span class="n">has_edges</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.has_children">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.has_children">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to check if a node has children.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node: ConcreteLayerNode</span>
+<span class="sd">            The node of which the existence of its children should be checked.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the node has children, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="n">node</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_children">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_children">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_children</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to return the children of a node as a list of ConcreteLayerNodes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node: ConcreteLayerNode</span>
+<span class="sd">            The node whose children should be returned.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[ConcreteLayerNode]</span>
+<span class="sd">            The children of the node passed as argument.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">child_node_id</span><span class="p">]</span> <span class="k">for</span> <span class="n">child_node_id</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.has_parents">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.has_parents">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to check if a node has parents.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node: ConcreteLayerNode</span>
+<span class="sd">            The node of which the existence of its parents should be checked.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the node has parents, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_parents</span><span class="p">(</span><span class="n">node</span><span class="p">))</span> <span class="o">!=</span> <span class="mi">0</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_parents">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_parents">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_parents</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to return the parents of a node as a list of ConcreteLayerNodes.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node: ConcreteLayerNode</span>
+<span class="sd">            The node whose parents should be returned</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[ConcreteLayerNode]</span>
+<span class="sd">            The parents of the node passed as argument.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">parent_node_id</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">parent_node_id</span><span class="p">,</span> <span class="n">end_nodes_ids</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">in</span> <span class="n">end_nodes_ids</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_input_id">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_input_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_id</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to return the input_id of the network, assuming there is a single input layer.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        str</span>
+<span class="sd">            The input_id of the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_ids</span><span class="o">.</span><span class="n">keys</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_roots">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_roots">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_roots</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to return the roots of the network as a list of ConcreteLayerNodes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[ConcreteLayerNode]</span>
+<span class="sd">            The roots of the network as a list of :class:`~pynever.nodes.ConcreteLayerNode` objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">root_node</span>
+                <span class="k">for</span> <span class="n">root_node_id</span><span class="p">,</span> <span class="n">root_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_parents</span><span class="p">(</span><span class="n">root_node</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_leaves">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_leaves">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_leaves</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to return the leaves of the network as a list of ConcreteLayerNodes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[ConcreteLayerNode]</span>
+<span class="sd">            The leaves of the network as a list of :class:`~pynever.nodes.ConcreteLayerNode` objects.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">leaf_node</span>
+                <span class="k">for</span> <span class="n">leaf_node_id</span><span class="p">,</span> <span class="n">leaf_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">has_children</span><span class="p">(</span><span class="n">leaf_node</span><span class="p">)]</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_topological_order">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_topological_order">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_topological_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reverse</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to walk the network with a DFS and build the topological sort.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        reverse: bool</span>
+<span class="sd">            Flag to reverse the order</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        list[str]</span>
+<span class="sd">            The topological sort of the network nodes identifiers as a stack.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">def</span><span class="w"> </span><span class="nf">recursive_dfs</span><span class="p">(</span><span class="n">node_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">visited</span><span class="p">:</span> <span class="nb">set</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">order</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot;Procedure to recursively read the graph&quot;&quot;&quot;</span>
+            <span class="k">for</span> <span class="n">child</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_children</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node_id</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">child</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">visited</span><span class="p">:</span>
+                    <span class="n">visited</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+                    <span class="n">recursive_dfs</span><span class="p">(</span><span class="n">child</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="n">visited</span><span class="p">,</span> <span class="n">order</span><span class="p">)</span>
+
+            <span class="n">order</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">node_id</span><span class="p">)</span>
+
+        <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">seen</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="n">recursive_dfs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_roots</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="n">seen</span><span class="p">,</span> <span class="n">result</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">reverse</span><span class="p">:</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.layers_iterator">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.layers_iterator">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">layers_iterator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">offset</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">collections</span><span class="o">.</span><span class="n">abc</span><span class="o">.</span><span class="n">Generator</span><span class="p">[</span><span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to build a generator for the layers of the network in sequential order.</span>
+<span class="sd">        It allows having an iterable interface when needed</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        offset: int</span>
+<span class="sd">            Offset to start the generation</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        Generator[ConcreteLayerNode | None, None]</span>
+<span class="sd">            The generator object</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">return</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_first_node</span><span class="p">()</span>
+
+            <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="k">while</span> <span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">counter</span> <span class="o">&gt;=</span> <span class="n">offset</span><span class="p">:</span>
+                    <span class="k">yield</span> <span class="n">node</span>
+
+                <span class="n">node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_next_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+                <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_first_node">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_first_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_first_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to get the first ConcreteLayerNode of the network.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ConcreteLayerNode</span>
+<span class="sd">            The first node of the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">EmptyNetworkError</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_topological_order</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_next_node">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_next_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_next_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to get the next ConcreteLayerNode of the network given an input ConcreteLayerNode.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ConcreteLayerNode</span>
+<span class="sd">            The next node of the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">EmptyNetworkError</span><span class="p">()</span>
+
+        <span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_topological_order</span><span class="p">()</span>
+        <span class="n">this_idx</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">order</span><span class="p">[</span><span class="n">this_idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]]</span> <span class="k">if</span> <span class="n">this_idx</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">order</span><span class="p">)</span> <span class="k">else</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_previous_node">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_previous_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_previous_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to get the previous ConcreteLayerNode of the network given an input ConcreteLayerNode.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ConcreteLaterNode</span>
+<span class="sd">            The previous node in the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">node</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_first_node</span><span class="p">():</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_topological_order</span><span class="p">()</span>
+        <span class="n">this_idx</span> <span class="o">=</span> <span class="n">order</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">order</span><span class="p">[</span><span class="n">this_idx</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_last_node">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_last_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_last_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to get the last ConcreteLayerNode of the network.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ConcreteLayerNode</span>
+<span class="sd">            The last node of the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">EmptyNetworkError</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_topological_order</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_input_len">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_input_len">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to count the number of inputs in in_dim</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of single inputs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">EmptyNetworkError</span><span class="p">()</span>
+
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_first_node</span><span class="p">()</span><span class="o">.</span><span class="n">get_input_dim</span><span class="p">())):</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_first_node</span><span class="p">()</span><span class="o">.</span><span class="n">get_input_dim</span><span class="p">()[</span><span class="n">d</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">count</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_output_len">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_output_len">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_output_len</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to count the number of outputs in out_dim</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of single outputs</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">EmptyNetworkError</span><span class="p">()</span>
+
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_last_node</span><span class="p">()</span><span class="o">.</span><span class="n">get_output_dim</span><span class="p">())):</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_last_node</span><span class="p">()</span><span class="o">.</span><span class="n">get_output_dim</span><span class="p">()[</span><span class="n">d</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">count</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_id_from_index">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_id_from_index">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_id_from_index</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method returns the identifier of the layer at the given index</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        index: int</span>
+<span class="sd">            Index of the layer to return</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        str</span>
+<span class="sd">            The identifier of the layer at the given index</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">index</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">IndexError</span>
+
+        <span class="c1"># If index is negative flip it</span>
+        <span class="k">if</span> <span class="n">index</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">)</span> <span class="o">+</span> <span class="n">index</span>
+
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_iterator</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">counter</span> <span class="o">==</span> <span class="n">index</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">layer</span><span class="o">.</span><span class="n">identifier</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Should never get here</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_index_from_id">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_index_from_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_index_from_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;This method returns the index of the layer with the given identifier</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        identifier: str</span>
+<span class="sd">            Identifier of the layer to return</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        int</span>
+<span class="sd">            The index of the layer with the given identifier</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_iterator</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">identifier</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">counter</span>
+            <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">raise</span> <span class="n">NotInNetworkError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;There is no layer with identifier </span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.get_previous_id">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.get_previous_id">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_previous_id</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to get the identifier of the previous layer given another layer identifier</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        identifier: str</span>
+<span class="sd">            Identifier of the layer</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        str</span>
+<span class="sd">            The identifier of the previous layer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">prev_layer</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_iterator</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">identifier</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">prev_layer</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">prev_layer</span><span class="o">.</span><span class="n">identifier</span>
+            <span class="n">prev_layer</span> <span class="o">=</span> <span class="n">layer</span>
+
+        <span class="k">raise</span> <span class="n">NotInNetworkError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;There is no layer with identifier </span><span class="si">{</span><span class="n">identifier</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.layer_precedes">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.layer_precedes">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">layer_precedes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">layer_id1</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">layer_id2</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to check whether a given layer precedes another or not</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        layer_id1: str</span>
+<span class="sd">            Identifier of the first layer</span>
+<span class="sd">        layer_id2: str</span>
+<span class="sd">            Identifier of the second layer</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if layer1 precedes layer2, False otherwise</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">found_id1</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_iterator</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">found_id1</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">layer_id1</span><span class="p">:</span>
+                    <span class="n">found_id1</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">layer</span><span class="o">.</span><span class="n">identifier</span> <span class="o">==</span> <span class="n">layer_id2</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.generic_add_node">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.generic_add_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generic_add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">,</span> <span class="n">parents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                         <span class="n">input_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to add a node to the network. A node cannot have both parents and inputs.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node: ConcreteLayerNode</span>
+<span class="sd">            The node to be added to the network.</span>
+<span class="sd">        parents: list[ConcreteLayerNode] | None</span>
+<span class="sd">            The parents of the node. (Optional)</span>
+<span class="sd">        children: list[ConcreteLayerNode] | None</span>
+<span class="sd">            The children of the node. (Optional)</span>
+<span class="sd">        input_ids: list[ConcreteLayerNode] | None</span>
+<span class="sd">            The inputs of the node. (Optional)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">input_ids</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">parents</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;A node cannot have both a parent and an input!&quot;</span><span class="p">)</span>
+
+        <span class="n">input_ids</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">input_ids</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">input_ids</span>
+        <span class="n">parents</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">parents</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">parents</span>
+        <span class="n">children</span> <span class="o">=</span> <span class="p">[]</span> <span class="k">if</span> <span class="n">children</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">children</span>
+
+        <span class="k">for</span> <span class="n">parent_node</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">parent_node</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">NotInNetworkError</span><span class="p">(</span><span class="n">parent_node</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">child_node</span> <span class="ow">in</span> <span class="n">children</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">child_node</span><span class="o">.</span><span class="n">identifier</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">NotInNetworkError</span><span class="p">(</span><span class="n">child_node</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">input_id</span> <span class="ow">in</span> <span class="n">input_ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">input_id</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_ids</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="k">raise</span> <span class="n">NotInNetworkError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">input_id</span><span class="si">}</span><span class="s1"> is not an input of the network&#39;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">c_node</span><span class="o">.</span><span class="n">identifier</span> <span class="k">for</span> <span class="n">c_node</span> <span class="ow">in</span> <span class="n">children</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">parent</span> <span class="ow">in</span> <span class="n">parents</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">parent</span><span class="o">.</span><span class="n">identifier</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">input_id</span> <span class="ow">in</span> <span class="n">input_ids</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_ids</span><span class="p">[</span><span class="n">input_id</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">input_id</span><span class="si">}</span><span class="s1"> has already been set as input to node </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">input_ids</span><span class="p">[</span><span class="n">input_id</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">input_ids</span><span class="p">[</span><span class="n">input_id</span><span class="p">]</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">identifier</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.remove_node">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.remove_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">remove_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to remove a node from the network.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node: ConcreteLayerNode</span>
+<span class="sd">            The node to be removed.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">parent_node</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_parents</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="p">[</span><span class="n">parent_node</span><span class="o">.</span><span class="n">identifier</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">edges</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_ids</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">input_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.delete_last_node">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.delete_last_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">delete_last_node</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to remove the last ConcreteLayerNode from the network.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ---------</span>
+<span class="sd">        ConcreteLayerNode</span>
+<span class="sd">            The last node of the network.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="n">EmptyNetworkError</span><span class="p">()</span>
+
+        <span class="n">last_node</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_last_node</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">last_node</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">last_node</span></div>
+
+
+<div class="viewcode-block" id="NeuralNetwork.count_relu_layers">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.NeuralNetwork.count_relu_layers">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">count_relu_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to count the number of ReLU layers.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The number of ReLU layers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">relu_count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">for</span> <span class="n">layer</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">layers_iterator</span><span class="p">():</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ReLUNode</span><span class="p">):</span>
+                <span class="n">relu_count</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">relu_count</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SequentialNetwork">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.SequentialNetwork">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SequentialNetwork</span><span class="p">(</span><span class="n">NeuralNetwork</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concrete child of NeuralNetwork representing a sequential NeuralNetwork.</span>
+<span class="sd">    It consists of a graph of ConcreteLayerNodes. It should be noted that this data structure</span>
+<span class="sd">    is not able to compute the input-output relation defined by the network.</span>
+<span class="sd">    The computational graph of a SequentialNetwork must correspond to a standard list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">input_id</span><span class="p">])</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__is_single_concrete</span><span class="p">(</span><span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">LayerNode</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Procedure to check whether the LayerNode given as a parameter is a ConcreteLayerNode with a single input.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node: LayerNode</span>
+<span class="sd">            The node to be checked.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the :class:`~pynever.nodes.LayerNode` is a :class:`~pynever.nodes.ConcreteLayerNode`</span>
+<span class="sd">            with a single input, False otherwise.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">((</span><span class="n">node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">)</span> <span class="ow">and</span>
+                <span class="nb">isinstance</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_input_dim</span><span class="p">(),</span> <span class="nb">tuple</span><span class="p">))</span>
+
+<div class="viewcode-block" id="SequentialNetwork.append_node">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.SequentialNetwork.append_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">append_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to add a new ConcreteLayerNode.</span>
+<span class="sd">        In a sequential network the new node must be connected directly to the previous node forming a list.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node: ConcreteLayerNode</span>
+<span class="sd">            New node to add to the :class:`~pynever.networks.SequentialNetwork`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">SequentialNetwork</span><span class="o">.</span><span class="n">__is_single_concrete</span><span class="p">(</span><span class="n">node</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidNodeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s1"> is not a ConcreteLayerNode with a single input!&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_empty</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generic_add_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">input_ids</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_input_id</span><span class="p">()])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">parents</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">get_last_node</span><span class="p">()]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generic_add_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="n">parents</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AcyclicNetwork">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.AcyclicNetwork">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AcyclicNetwork</span><span class="p">(</span><span class="n">NeuralNetwork</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Concrete child of NeuralNetwork representing an acyclic NeuralNetwork.</span>
+<span class="sd">    The computational graph of an AcyclicNetwork must correspond to a standard list.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">input_ids</span><span class="p">)</span>
+
+<div class="viewcode-block" id="AcyclicNetwork.add_node">
+<a class="viewcode-back" href="../../API/0_Networks.html#pynever.networks.AcyclicNetwork.add_node">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">add_node</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">,</span> <span class="n">parents</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">nodes</span><span class="o">.</span><span class="n">ConcreteLayerNode</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">children</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">nodes</span><span class="o">.</span><span class="n">LayerNode</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to add a node to the network only if it preserves the acyclic property</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        node: ConcreteLayerNode</span>
+<span class="sd">            The :class:`~pynever.nodes.LayerNode` to add</span>
+<span class="sd">        parents: list[ConcreteLayerNode] | None</span>
+<span class="sd">            The new node parents, if existing</span>
+<span class="sd">        children: list[ConcreteLayerNode] | None</span>
+<span class="sd">            The new node children, if existing</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generic_add_node</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">parents</span><span class="p">,</span> <span class="n">children</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_acyclic</span><span class="p">():</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">remove_node</span><span class="p">(</span><span class="n">node</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Adding </span><span class="si">{</span><span class="n">node</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> with the provided parents and children would create a cycle&quot;</span>
+                            <span class="sa">f</span><span class="s2">&quot; in the Network!&quot;</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NeverTools.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

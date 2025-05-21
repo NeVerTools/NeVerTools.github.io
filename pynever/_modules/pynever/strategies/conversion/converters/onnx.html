@@ -1,0 +1,974 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pynever.strategies.conversion.converters.onnx &mdash; pyNeVer 1.1.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../../../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../../../_static/documentation_options.js?v=00f267c6"></script>
+      <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../../../index.html" class="icon icon-home">
+            pyNeVer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Setup</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../Setup/setup.html">Installation and Setup</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../API/0_Networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../API/1_Nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../API/2_Training.html">Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../API/3_Conversion.html">Conversion</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../../../index.html">pyNeVer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../../../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pynever.strategies.conversion.converters.onnx</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pynever.strategies.conversion.converters.onnx</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">onnx</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pynever.networks</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">networks</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pynever.nodes</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nodes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynever.strategies.conversion.representation</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConversionStrategy</span><span class="p">,</span> <span class="n">ONNXNetwork</span>
+
+
+<div class="viewcode-block" id="ONNXConverter">
+<a class="viewcode-back" href="../../../../../API/3_Conversion.html#pynever.strategies.conversion.converters.onnx.ONNXConverter">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ONNXConverter</span><span class="p">(</span><span class="n">ConversionStrategy</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used to represent the conversion strategy for ONNX models.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_relu</span><span class="p">(</span><span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Relu&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_elu</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ELUNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Elu&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">alpha</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_leakyrelu</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">LeakyReLUNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                             <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;LeakyRelu&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">negative_slope</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_celu</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">CELUNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                        <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Celu&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">alpha</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_sigmoid</span><span class="p">(</span><span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Sigmoid&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_tanh</span><span class="p">(</span><span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Tanh&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_linear</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">FullyConnectedNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                          <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">input_info</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">initializers</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">input_weight</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_weight&quot;</span>
+
+        <span class="n">weight_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_weight</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                               <span class="p">[</span><span class="n">current_node</span><span class="o">.</span><span class="n">out_features</span><span class="p">,</span>
+                                                                <span class="n">current_node</span><span class="o">.</span><span class="n">in_features</span><span class="p">])</span>
+
+        <span class="n">weight_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">input_weight</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">current_node</span><span class="o">.</span><span class="n">has_bias</span><span class="p">:</span>
+            <span class="n">input_bias</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_bias&quot;</span>
+            <span class="n">bias_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_bias</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                                 <span class="p">[</span><span class="n">current_node</span><span class="o">.</span><span class="n">out_features</span><span class="p">])</span>
+            <span class="n">bias_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">input_bias</span><span class="p">)</span>
+
+            <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+                <span class="s1">&#39;Gemm&#39;</span><span class="p">,</span>
+                <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">,</span> <span class="n">input_weight</span><span class="p">,</span> <span class="n">input_bias</span><span class="p">],</span>
+                <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">beta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">transA</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">transB</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+
+            <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bias_value_info</span><span class="p">)</span>
+            <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bias_tensor</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+                <span class="s1">&#39;Gemm&#39;</span><span class="p">,</span>
+                <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">,</span> <span class="n">input_weight</span><span class="p">],</span>
+                <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+                <span class="n">alpha</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">beta</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+                <span class="n">transA</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+                <span class="n">transB</span><span class="o">=</span><span class="mi">0</span>
+            <span class="p">)</span>
+
+        <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight_value_info</span><span class="p">)</span>
+        <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight_tensor</span><span class="p">)</span>
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_batchnorm</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">BatchNormNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                             <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">input_info</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">initializers</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">input_scale</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_scale&quot;</span>
+        <span class="n">input_bias</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_bias&quot;</span>
+        <span class="n">input_mean</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_mean&quot;</span>
+        <span class="n">input_var</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_var&quot;</span>
+
+        <span class="n">scale_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_scale</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                              <span class="p">[</span><span class="n">current_node</span><span class="o">.</span><span class="n">num_features</span><span class="p">])</span>
+        <span class="n">bias_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_bias</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                             <span class="p">[</span><span class="n">current_node</span><span class="o">.</span><span class="n">num_features</span><span class="p">])</span>
+        <span class="n">mean_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_mean</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                             <span class="p">[</span><span class="n">current_node</span><span class="o">.</span><span class="n">num_features</span><span class="p">])</span>
+        <span class="n">var_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_var</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                            <span class="p">[</span><span class="n">current_node</span><span class="o">.</span><span class="n">num_features</span><span class="p">])</span>
+
+        <span class="n">scale_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">input_scale</span><span class="p">)</span>
+        <span class="n">bias_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">input_bias</span><span class="p">)</span>
+        <span class="n">mean_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">running_mean</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">input_mean</span><span class="p">)</span>
+        <span class="n">var_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">running_var</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">input_var</span><span class="p">)</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;BatchNormalization&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">,</span> <span class="n">input_scale</span><span class="p">,</span> <span class="n">input_bias</span><span class="p">,</span> <span class="n">input_mean</span><span class="p">,</span> <span class="n">input_var</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">epsilon</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">eps</span><span class="p">,</span>
+            <span class="n">momentum</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">momentum</span><span class="p">,</span>
+            <span class="n">training_mode</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">track_running_stats</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scale_value_info</span><span class="p">)</span>
+        <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bias_value_info</span><span class="p">)</span>
+        <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean_value_info</span><span class="p">)</span>
+        <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_value_info</span><span class="p">)</span>
+
+        <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">scale_tensor</span><span class="p">)</span>
+        <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bias_tensor</span><span class="p">)</span>
+        <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">mean_tensor</span><span class="p">)</span>
+        <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">var_tensor</span><span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_conv</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConvNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                        <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">input_info</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">initializers</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">weight_size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="n">input_weight</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_weight&quot;</span>
+
+        <span class="n">weight_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_weight</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                               <span class="n">weight_size</span><span class="p">)</span>
+
+        <span class="n">weight_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">input_weight</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">current_node</span><span class="o">.</span><span class="n">has_bias</span><span class="p">:</span>
+
+            <span class="n">input_bias</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_bias&quot;</span>
+            <span class="n">bias_size</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+
+            <span class="n">bias_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_bias</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                                 <span class="n">bias_size</span><span class="p">)</span>
+            <span class="n">bias_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">input_bias</span><span class="p">)</span>
+
+            <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+                <span class="s1">&#39;Conv&#39;</span><span class="p">,</span>
+                <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">,</span> <span class="n">input_weight</span><span class="p">,</span> <span class="n">input_bias</span><span class="p">],</span>
+                <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+                <span class="n">kernel_shape</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">),</span>
+                <span class="n">strides</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">stride</span><span class="p">),</span>
+                <span class="n">dilations</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">dilation</span><span class="p">),</span>
+                <span class="n">groups</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span>
+                <span class="n">pads</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
+            <span class="p">)</span>
+
+            <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bias_value_info</span><span class="p">)</span>
+            <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">bias_tensor</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+                <span class="s1">&#39;Conv&#39;</span><span class="p">,</span>
+                <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">,</span> <span class="n">input_weight</span><span class="p">],</span>
+                <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+                <span class="n">kernel_shape</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">),</span>
+                <span class="n">strides</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">stride</span><span class="p">),</span>
+                <span class="n">dilations</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">dilation</span><span class="p">),</span>
+                <span class="n">groups</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">groups</span><span class="p">,</span>
+                <span class="n">pads</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
+            <span class="p">)</span>
+
+        <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight_value_info</span><span class="p">)</span>
+        <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">weight_tensor</span><span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_averagepool</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">AveragePoolNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                               <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;AveragePool&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">ceil_mode</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">ceil_mode</span><span class="p">),</span>
+            <span class="n">count_include_pad</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">count_include_pad</span><span class="p">),</span>
+            <span class="n">kernel_shape</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">),</span>
+            <span class="n">strides</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">stride</span><span class="p">),</span>
+            <span class="n">pads</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_maxpool</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">MaxPoolNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                           <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="c1"># N.B. we do not support the attribute storage_order of ONNX</span>
+        <span class="c1"># ONNX does not support the return_indices parameters</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;MaxPool&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">ceil_mode</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">ceil_mode</span><span class="p">),</span>
+            <span class="n">dilations</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">dilation</span><span class="p">,</span>
+            <span class="n">kernel_shape</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">kernel_size</span><span class="p">),</span>
+            <span class="n">strides</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">stride</span><span class="p">),</span>
+            <span class="n">pads</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">padding</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_lrn</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">LRNNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                       <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;LRN&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">alpha</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">alpha</span><span class="p">,</span>
+            <span class="n">beta</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">beta</span><span class="p">,</span>
+            <span class="n">bias</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">k</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="n">current_node</span><span class="o">.</span><span class="n">size</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_softmax</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">SoftMaxNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                           <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="c1"># Since our representation do not consider the batch dimension we need to scale the axis by 1</span>
+        <span class="c1"># when we pass to the onnx representation.</span>
+        <span class="n">temp_axis</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Softmax&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">axis</span><span class="o">=</span><span class="n">temp_axis</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_unsqueeze</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">UnsqueezeNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                             <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">input_info</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">initializers</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="n">axes_size</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">axes</span><span class="p">)]</span>
+        <span class="n">input_axes</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_axes&quot;</span>
+
+        <span class="n">axes_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_axes</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">INT64</span><span class="p">,</span>
+                                                             <span class="n">axes_size</span><span class="p">)</span>
+
+        <span class="c1"># Since our representation do not consider the batch dimension we need to scale all the axes</span>
+        <span class="c1"># by 1 when we pass to the onnx representation.</span>
+        <span class="n">temp_axes</span> <span class="o">=</span> <span class="p">[</span><span class="n">e</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">current_node</span><span class="o">.</span><span class="n">axes</span><span class="p">]</span>
+        <span class="n">axes_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">temp_axes</span><span class="p">),</span> <span class="n">input_axes</span><span class="p">)</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Unsqueeze&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">,</span> <span class="n">input_axes</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">axes_value_info</span><span class="p">)</span>
+        <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">axes_tensor</span><span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_reshape</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ReshapeNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                           <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">input_info</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">initializers</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="c1"># Need to add the batch dimension to the shape</span>
+        <span class="n">temp_shape</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">current_node</span><span class="o">.</span><span class="n">shape</span><span class="p">:</span>
+            <span class="n">temp_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+        <span class="n">shape_size</span> <span class="o">=</span> <span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">shape</span><span class="p">)]</span>
+        <span class="n">input_shape</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_shape&quot;</span>
+
+        <span class="n">shape_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_shape</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">INT64</span><span class="p">,</span>
+                                                              <span class="n">shape_size</span><span class="p">)</span>
+
+        <span class="n">shape_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">temp_shape</span><span class="p">),</span> <span class="n">input_shape</span><span class="p">)</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Reshape&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">,</span> <span class="n">input_shape</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">allow_zero</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">allow_zero</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shape_value_info</span><span class="p">)</span>
+        <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">shape_tensor</span><span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_flatten</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">FlattenNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                           <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="c1"># Since our representation do not consider the batch dimension we need to scale the axis by 1</span>
+        <span class="c1"># when we pass to the onnx representation.</span>
+        <span class="n">temp_axis</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">axis</span> <span class="o">+</span> <span class="mi">1</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Flatten&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">axis</span><span class="o">=</span><span class="n">temp_axis</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_dropout</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">DropoutNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                           <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">input_info</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">initializers</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="c1"># N.B. we do not support the seed attribute and the training_mode input.</span>
+
+        <span class="n">ratio_size</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">input_ratio</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span> <span class="o">+</span> <span class="s2">&quot;_ratio&quot;</span>
+
+        <span class="n">ratio_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">input_ratio</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                              <span class="n">ratio_size</span><span class="p">)</span>
+
+        <span class="n">ratio_tensor</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">current_node</span><span class="o">.</span><span class="n">p</span><span class="p">]),</span> <span class="n">input_ratio</span><span class="p">)</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Dropout&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">,</span> <span class="n">input_ratio</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratio_value_info</span><span class="p">)</span>
+        <span class="n">initializers</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ratio_tensor</span><span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__add_onnx_transpose</span><span class="p">(</span><span class="n">current_node</span><span class="p">:</span> <span class="n">nodes</span><span class="o">.</span><span class="n">TransposeNode</span><span class="p">,</span> <span class="n">current_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_output</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                             <span class="n">onnx_nodes</span><span class="p">:</span> <span class="nb">list</span><span class="p">):</span>
+
+        <span class="c1"># Since our representation do not consider the batch dimension we need to scale the perm by 1</span>
+        <span class="c1"># and add the 0 dimension when we pass to the onnx representation.</span>
+        <span class="n">perm</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">current_node</span><span class="o">.</span><span class="n">perm</span><span class="p">:</span>
+            <span class="n">perm</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">p</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">onnx_node</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_node</span><span class="p">(</span>
+            <span class="s1">&#39;Transpose&#39;</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_input</span><span class="p">],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">current_output</span><span class="p">],</span>
+            <span class="n">perm</span><span class="o">=</span><span class="n">perm</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_nodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">onnx_node</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ONNXConverter.from_neural_network">
+<a class="viewcode-back" href="../../../../../API/3_Conversion.html#pynever.strategies.conversion.converters.onnx.ONNXConverter.from_neural_network">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_neural_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">network</span><span class="p">:</span> <span class="n">networks</span><span class="o">.</span><span class="n">NeuralNetwork</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ONNXNetwork</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the neural network of interest to a ONNX representation.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        network : NeuralNetwork</span>
+<span class="sd">            The neural network to convert.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        ONNXNetwork</span>
+<span class="sd">            The ONNX representation resulting from the conversion of the original network.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">network</span><span class="p">,</span> <span class="n">networks</span><span class="o">.</span><span class="n">SequentialNetwork</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+        <span class="n">current_node</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_first_node</span><span class="p">()</span>
+        <span class="n">previous_output</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_input_id</span><span class="p">()</span>
+        <span class="n">input_info</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">output_info</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">initializers</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">onnx_nodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">while</span> <span class="n">current_node</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+            <span class="n">current_input</span> <span class="o">=</span> <span class="n">previous_output</span>
+            <span class="n">current_output</span> <span class="o">=</span> <span class="n">current_node</span><span class="o">.</span><span class="n">identifier</span>
+
+            <span class="n">input_dim</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="o">.</span><span class="n">get_input_dim</span><span class="p">(),</span> <span class="nb">list</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s1">&#39;Sequential networks cannot have multiple input layers&#39;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">current_node</span><span class="o">.</span><span class="n">get_input_dim</span><span class="p">():</span>
+                <span class="n">input_dim</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+            <span class="n">output_dim</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">current_node</span><span class="o">.</span><span class="n">out_dim</span><span class="p">:</span>
+                <span class="n">output_dim</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+            <span class="n">input_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">current_input</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                                  <span class="n">input_dim</span><span class="p">)</span>
+            <span class="n">output_value_info</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_tensor_value_info</span><span class="p">(</span><span class="n">current_output</span><span class="p">,</span> <span class="n">onnx</span><span class="o">.</span><span class="n">TensorProto</span><span class="o">.</span><span class="n">DOUBLE</span><span class="p">,</span>
+                                                                   <span class="n">output_dim</span><span class="p">)</span>
+
+            <span class="n">input_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">input_value_info</span><span class="p">)</span>
+            <span class="n">output_info</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">output_value_info</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ReLUNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_relu</span><span class="p">(</span><span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ELUNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_elu</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">LeakyReLUNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_leakyrelu</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">CELUNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_celu</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">SigmoidNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_sigmoid</span><span class="p">(</span><span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">TanhNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_tanh</span><span class="p">(</span><span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">FullyConnectedNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_linear</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">,</span> <span class="n">input_info</span><span class="p">,</span>
+                                       <span class="n">initializers</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">BatchNormNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_batchnorm</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">,</span> <span class="n">input_info</span><span class="p">,</span>
+                                          <span class="n">initializers</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ConvNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_conv</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">,</span> <span class="n">input_info</span><span class="p">,</span>
+                                     <span class="n">initializers</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">AveragePoolNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_averagepool</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">MaxPoolNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_maxpool</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">LRNNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_lrn</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">SoftMaxNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_softmax</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">UnsqueezeNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_unsqueeze</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">,</span> <span class="n">input_info</span><span class="p">,</span>
+                                          <span class="n">initializers</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">ReshapeNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_reshape</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">,</span> <span class="n">input_info</span><span class="p">,</span>
+                                        <span class="n">initializers</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">FlattenNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_flatten</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">DropoutNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_dropout</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">,</span> <span class="n">input_info</span><span class="p">,</span>
+                                        <span class="n">initializers</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">nodes</span><span class="o">.</span><span class="n">TransposeNode</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__add_onnx_transpose</span><span class="p">(</span><span class="n">current_node</span><span class="p">,</span> <span class="n">current_input</span><span class="p">,</span> <span class="n">current_output</span><span class="p">,</span> <span class="n">onnx_nodes</span><span class="p">)</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+            <span class="n">previous_output</span> <span class="o">=</span> <span class="n">current_output</span>
+            <span class="n">current_node</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_next_node</span><span class="p">(</span><span class="n">current_node</span><span class="p">)</span>
+
+        <span class="n">onnx_graph</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_graph</span><span class="p">(</span>
+            <span class="n">nodes</span><span class="o">=</span><span class="n">onnx_nodes</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">network</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="p">[</span><span class="n">input_info</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="p">[</span><span class="n">output_info</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]],</span>
+            <span class="n">initializer</span><span class="o">=</span><span class="n">initializers</span><span class="p">,</span>
+            <span class="n">value_info</span><span class="o">=</span><span class="n">input_info</span>
+        <span class="p">)</span>
+
+        <span class="n">onnx_network</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">helper</span><span class="o">.</span><span class="n">make_model</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="n">onnx_graph</span><span class="p">)</span>
+        <span class="n">alt_net</span> <span class="o">=</span> <span class="n">ONNXNetwork</span><span class="p">(</span><span class="n">network</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="n">onnx_network</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">alt_net</span></div>
+
+
+<div class="viewcode-block" id="ONNXConverter.to_neural_network">
+<a class="viewcode-back" href="../../../../../API/3_Conversion.html#pynever.strategies.conversion.converters.onnx.ONNXConverter.to_neural_network">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">to_neural_network</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">alt_rep</span><span class="p">:</span> <span class="n">ONNXNetwork</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">networks</span><span class="o">.</span><span class="n">NeuralNetwork</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Convert the ONNX representation of interest to the internal one.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        alt_rep : ONNXNetwork</span>
+<span class="sd">            The ONNX Representation to convert.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        ----------</span>
+<span class="sd">        NeuralNetwork</span>
+<span class="sd">            The Neural Network resulting from the conversion of ONNX Representation.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">identifier</span> <span class="o">=</span> <span class="n">alt_rep</span><span class="o">.</span><span class="n">identifier</span>
+        <span class="n">network</span> <span class="o">=</span> <span class="n">networks</span><span class="o">.</span><span class="n">SequentialNetwork</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">alt_rep</span><span class="o">.</span><span class="n">onnx_network</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">initializer</span> <span class="ow">in</span> <span class="n">alt_rep</span><span class="o">.</span><span class="n">onnx_network</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">initializer</span><span class="p">:</span>
+            <span class="n">parameters</span><span class="p">[</span><span class="n">initializer</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">onnx</span><span class="o">.</span><span class="n">numpy_helper</span><span class="o">.</span><span class="n">to_array</span><span class="p">(</span><span class="n">initializer</span><span class="p">)</span>
+
+        <span class="n">shape_info</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">alt_rep</span><span class="o">.</span><span class="n">onnx_network</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">input</span><span class="p">:</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">dim</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">type</span><span class="o">.</span><span class="n">tensor_type</span><span class="o">.</span><span class="n">shape</span><span class="o">.</span><span class="n">dim</span><span class="p">:</span>
+                <span class="n">shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">dim</span><span class="o">.</span><span class="n">dim_value</span><span class="p">)</span>
+            <span class="n">shape_info</span><span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">shape</span>
+
+        <span class="n">node_index</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">in_dim</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape_info</span><span class="p">[</span><span class="n">alt_rep</span><span class="o">.</span><span class="n">onnx_network</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">][</span><span class="mi">1</span><span class="p">:])</span>
+        <span class="k">if</span> <span class="n">in_dim</span> <span class="o">==</span> <span class="p">():</span>
+            <span class="n">in_dim</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape_info</span><span class="p">[</span><span class="n">alt_rep</span><span class="o">.</span><span class="n">onnx_network</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">])</span>
+
+        <span class="n">temp_fc</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">matmul_found</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">alt_rep</span><span class="o">.</span><span class="n">onnx_network</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">node</span><span class="p">:</span>
+<span class="w">            </span><span class="sd">&quot;&quot;&quot; This part of code handles the case when there is a MatMul + Add for a linear transformation &quot;&quot;&quot;</span>
+            <span class="k">if</span> <span class="n">matmul_found</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Add&quot;</span><span class="p">:</span>
+                    <span class="c1"># We assume that the bias is always the second element of node.input</span>
+                    <span class="n">bias</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                    <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">FullyConnectedNode</span><span class="p">(</span><span class="n">temp_fc</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="n">temp_fc</span><span class="o">.</span><span class="n">get_input_dim</span><span class="p">(),</span>
+                                                                 <span class="n">temp_fc</span><span class="o">.</span><span class="n">out_features</span><span class="p">,</span> <span class="n">temp_fc</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">bias</span><span class="p">))</span>
+                    <span class="n">matmul_found</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">temp_fc</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">node_index</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">in_dim</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_last_node</span><span class="p">()</span><span class="o">.</span><span class="n">out_dim</span>
+                    <span class="k">continue</span>
+
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">FullyConnectedNode</span><span class="p">(</span><span class="n">temp_fc</span><span class="o">.</span><span class="n">identifier</span><span class="p">,</span> <span class="n">temp_fc</span><span class="o">.</span><span class="n">get_input_dim</span><span class="p">(),</span>
+                                                                 <span class="n">temp_fc</span><span class="o">.</span><span class="n">out_features</span><span class="p">,</span> <span class="n">temp_fc</span><span class="o">.</span><span class="n">weight</span><span class="p">,</span> <span class="n">has_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+                    <span class="n">matmul_found</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">temp_fc</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="n">node_index</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">in_dim</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_last_node</span><span class="p">()</span><span class="o">.</span><span class="n">out_dim</span>
+
+            <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;MatMul&quot;</span><span class="p">:</span>
+                <span class="c1"># If the weight is the second parameter we need to transpose it</span>
+                <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                    <span class="n">weight</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">weight</span> <span class="o">=</span> <span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span>
+
+                <span class="n">weight</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">weight</span><span class="p">)</span>
+
+                <span class="n">out_features</span> <span class="o">=</span> <span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">temp_fc</span> <span class="o">=</span> <span class="n">nodes</span><span class="o">.</span><span class="n">FullyConnectedNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">out_features</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">has_bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">matmul_found</span> <span class="o">=</span> <span class="kc">True</span>
+
+                <span class="k">continue</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s1">&#39;Sub&#39;</span><span class="p">:</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot; This node is not relevant for verification and should not appear at all in benchmarks &quot;&quot;&quot;</span>
+                <span class="k">continue</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s1">&#39;Div&#39;</span><span class="p">:</span>
+<span class="w">                </span><span class="sd">&quot;&quot;&quot; This node is not relevant for verification and should not appear at all in benchmarks &quot;&quot;&quot;</span>
+                <span class="k">continue</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Relu&quot;</span><span class="p">:</span>
+                <span class="c1"># We assume that the real input of the node is always the first element of node.input</span>
+                <span class="c1"># and the first element of the shape is the batch placeholder</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">ReLUNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Elu&quot;</span><span class="p">:</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span>
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span>
+                        <span class="n">alpha</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">f</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">ELUNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">alpha</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;LeakyRelu&quot;</span><span class="p">:</span>
+                <span class="n">negative_slope</span> <span class="o">=</span> <span class="mf">1.0</span>
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span>
+                        <span class="n">negative_slope</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">f</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">LeakyReLUNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">negative_slope</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Celu&quot;</span><span class="p">:</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="mf">1.0</span>
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span>
+                        <span class="n">alpha</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">f</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">CELUNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">alpha</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Sigmoid&quot;</span><span class="p">:</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">SigmoidNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Tanh&quot;</span><span class="p">:</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">TanhNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Gemm&quot;</span><span class="p">:</span>
+                <span class="c1"># We assume that the weight tensor is always the second element of node.input and the bias tensor</span>
+                <span class="c1"># is always the third.</span>
+                <span class="c1"># N.B: We do not support the attributes transA and transB,</span>
+                <span class="c1"># therefore we need to transpose the weight vector.</span>
+                <span class="c1"># TODO: Can we support transA and transB in some way?</span>
+                <span class="n">weight</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;transA&#39;</span> <span class="ow">or</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;transB&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="n">att</span><span class="o">.</span><span class="n">i</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                        <span class="n">weight</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
+
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">has_bias</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">bias</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">has_bias</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">bias</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+
+                <span class="n">out_features</span> <span class="o">=</span> <span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">FullyConnectedNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span>
+                                                             <span class="n">out_features</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">has_bias</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;BatchNormalization&quot;</span><span class="p">:</span>
+                <span class="c1"># We assume that the real input is always the first element of node.input, the weight tensor</span>
+                <span class="c1"># is always the second, the bias tensor is always the third, the running_mean always the fourth</span>
+                <span class="c1"># and the running_var always the fifth.</span>
+
+                <span class="n">weight</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                <span class="n">bias</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+                <span class="n">running_mean</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">3</span><span class="p">]])</span>
+                <span class="n">running_var</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">4</span><span class="p">]])</span>
+
+                <span class="n">eps</span> <span class="o">=</span> <span class="mf">1e-05</span>
+                <span class="n">momentum</span> <span class="o">=</span> <span class="mf">0.9</span>
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;epsilon&#39;</span><span class="p">:</span>
+                        <span class="n">eps</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">f</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;momentum&#39;</span><span class="p">:</span>
+                        <span class="n">momentum</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">f</span>
+
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">BatchNormNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">weight</span><span class="p">,</span>
+                                                        <span class="n">bias</span><span class="p">,</span> <span class="n">running_mean</span><span class="p">,</span> <span class="n">running_var</span><span class="p">,</span> <span class="n">eps</span><span class="p">,</span> <span class="n">momentum</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Conv&quot;</span><span class="p">:</span>
+                <span class="c1"># We assume that the real input is always the first element of node.input, the weight tensor</span>
+                <span class="c1"># is always the second and the bias tensor is always the third.</span>
+
+                <span class="n">weight</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">2</span><span class="p">:</span>
+                    <span class="n">has_bias</span> <span class="o">=</span> <span class="kc">False</span>
+                    <span class="n">bias</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">has_bias</span> <span class="o">=</span> <span class="kc">True</span>
+                    <span class="n">bias</span> <span class="o">=</span> <span class="n">Tensor</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">2</span><span class="p">]])</span>
+
+                <span class="n">out_channels</span> <span class="o">=</span> <span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+                <span class="c1"># TODO: at present we do not support auto_pad and implicit kernel_shape.</span>
+                <span class="n">groups</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="c1"># We need to exclude the first axis (channels) from the following quantities.</span>
+                <span class="n">dilation</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
+                <span class="n">padding</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
+                <span class="n">stride</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
+                <span class="n">kernel_shape</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;dilations&#39;</span><span class="p">:</span>
+                        <span class="n">dilation</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;groups&#39;</span><span class="p">:</span>
+                        <span class="n">groups</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">i</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;kernel_shape&#39;</span><span class="p">:</span>
+                        <span class="n">kernel_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;pads&#39;</span><span class="p">:</span>
+                        <span class="n">padding</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;strides&#39;</span><span class="p">:</span>
+                        <span class="n">stride</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">ConvNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_shape</span><span class="p">,</span>
+                                                   <span class="n">stride</span><span class="p">,</span> <span class="n">padding</span><span class="p">,</span> <span class="n">dilation</span><span class="p">,</span> <span class="n">groups</span><span class="p">,</span> <span class="n">has_bias</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">weight</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;AveragePool&quot;</span><span class="p">:</span>
+                <span class="c1"># TODO: at present we do not support auto_pad.</span>
+                <span class="n">ceil_mode</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">count_include_pad</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">padding</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
+                <span class="n">stride</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
+                <span class="n">kernel_shape</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;ceil_mode&#39;</span><span class="p">:</span>
+                        <span class="n">ceil_mode</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">i</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;count_include_pad&#39;</span><span class="p">:</span>
+                        <span class="n">count_include_pad</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">i</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;kernel_shape&#39;</span><span class="p">:</span>
+                        <span class="n">kernel_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;pads&#39;</span><span class="p">:</span>
+                        <span class="n">padding</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;strides&#39;</span><span class="p">:</span>
+                        <span class="n">stride</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">AveragePoolNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">kernel_shape</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span>
+                                                          <span class="n">padding</span><span class="p">,</span> <span class="n">ceil_mode</span><span class="p">,</span> <span class="n">count_include_pad</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;MaxPool&quot;</span><span class="p">:</span>
+                <span class="n">ceil_mode</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="n">dilation</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
+                <span class="n">padding</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
+                <span class="n">stride</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">1</span><span class="p">:])))</span>
+                <span class="n">kernel_shape</span> <span class="o">=</span> <span class="kc">None</span>
+
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;ceil_mode&#39;</span><span class="p">:</span>
+                        <span class="n">ceil_mode</span> <span class="o">=</span> <span class="nb">bool</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">i</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;dilations&#39;</span><span class="p">:</span>
+                        <span class="n">dilation</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;kernel_shape&#39;</span><span class="p">:</span>
+                        <span class="n">kernel_shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;pads&#39;</span><span class="p">:</span>
+                        <span class="n">padding</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;strides&#39;</span><span class="p">:</span>
+                        <span class="n">stride</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span>
+
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">MaxPoolNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">kernel_shape</span><span class="p">,</span> <span class="n">stride</span><span class="p">,</span> <span class="n">padding</span><span class="p">,</span>
+                                                      <span class="n">dilation</span><span class="p">,</span> <span class="n">ceil_mode</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;LRN&quot;</span><span class="p">:</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="mf">0.0001</span>
+                <span class="n">beta</span> <span class="o">=</span> <span class="mf">0.75</span>
+                <span class="n">k</span> <span class="o">=</span> <span class="mf">1.0</span>
+                <span class="n">size</span> <span class="o">=</span> <span class="mi">0</span>
+
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;alpha&#39;</span><span class="p">:</span>
+                        <span class="n">alpha</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">f</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span>
+                        <span class="n">beta</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">f</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;bias&#39;</span><span class="p">:</span>
+                        <span class="n">k</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">f</span>
+                    <span class="k">elif</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;size&#39;</span><span class="p">:</span>
+                        <span class="n">size</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">i</span>
+
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">LRNNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">alpha</span><span class="p">,</span> <span class="n">beta</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Softmax&quot;</span><span class="p">:</span>
+                <span class="c1"># Since the ONNX representation consider the batch dimension we need to scale the axis by 1</span>
+                <span class="c1"># when we pass to our representation.</span>
+                <span class="n">axis</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;axis&#39;</span><span class="p">:</span>
+                        <span class="n">axis</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">SoftMaxNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">axis</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Unsqueeze&quot;</span><span class="p">:</span>
+                <span class="n">temp_axes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                <span class="c1"># Since our representation do not consider the batch dimension we need to scale all the axes</span>
+                <span class="c1"># by 1 when we pass to the onnx representation.</span>
+                <span class="n">axes</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">([</span><span class="n">e</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">temp_axes</span><span class="p">])</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">UnsqueezeNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">axes</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Reshape&quot;</span><span class="p">:</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]])</span>
+                <span class="c1"># We need to eliminate the first dimension corresponding to the batch dimension</span>
+                <span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+                <span class="n">allow_zero</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;allowzero&#39;</span><span class="p">:</span>
+                        <span class="n">allow_zero</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">i</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">ReshapeNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">shape</span><span class="p">,</span> <span class="n">allow_zero</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Flatten&quot;</span><span class="p">:</span>
+                <span class="c1"># We need to scale the axis value since our representation does not have the batch dimension</span>
+                <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;axis&#39;</span><span class="p">:</span>
+                        <span class="n">axis</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">FlattenNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">axis</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Dropout&quot;</span><span class="p">:</span>
+                <span class="n">ratio</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">parameters</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">DropoutNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">ratio</span><span class="p">))</span>
+
+            <span class="k">elif</span> <span class="n">node</span><span class="o">.</span><span class="n">op_type</span> <span class="o">==</span> <span class="s2">&quot;Transpose&quot;</span><span class="p">:</span>
+                <span class="n">perm</span> <span class="o">=</span> <span class="kc">None</span>
+                <span class="k">for</span> <span class="n">att</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">attribute</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">att</span><span class="o">.</span><span class="n">name</span> <span class="o">==</span> <span class="s1">&#39;perm&#39;</span><span class="p">:</span>
+                        <span class="c1"># Must manage batch dimension</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">)</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">):</span>
+                            <span class="n">perm</span> <span class="o">=</span> <span class="p">[</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">att</span><span class="o">.</span><span class="n">ints</span><span class="p">))]</span>
+                        <span class="k">else</span><span class="p">:</span>
+                            <span class="n">perm</span> <span class="o">=</span> <span class="n">att</span><span class="o">.</span><span class="n">ints</span>
+                <span class="n">network</span><span class="o">.</span><span class="n">append_node</span><span class="p">(</span><span class="n">nodes</span><span class="o">.</span><span class="n">TransposeNode</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">in_dim</span><span class="p">,</span> <span class="n">perm</span><span class="p">))</span>
+
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+            <span class="n">node_index</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">in_dim</span> <span class="o">=</span> <span class="n">network</span><span class="o">.</span><span class="n">get_last_node</span><span class="p">()</span><span class="o">.</span><span class="n">out_dim</span>
+
+        <span class="k">return</span> <span class="n">network</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NeverTools.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

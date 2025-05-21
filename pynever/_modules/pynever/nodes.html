@@ -1,0 +1,1174 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>pynever.nodes &mdash; pyNeVer 1.1.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=03e43079" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=00f267c6"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            pyNeVer
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Setup</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Setup/setup.html">Installation and Setup</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../API/0_Networks.html">Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/1_Nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/2_Training.html">Training</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../API/3_Conversion.html">Conversion</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">pyNeVer</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">pynever.nodes</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for pynever.nodes</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the classes to define and create neural network layers.</span>
+<span class="sd">The abstract class ``LayerNode`` represents a generic NN layer, and its child ``ConcreteLayerNode`` defines</span>
+<span class="sd">the internal representation of all currently supported layers.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">copy</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">pynever.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InvalidDimensionError</span><span class="p">,</span> <span class="n">OutOfRangeError</span>
+
+
+<div class="viewcode-block" id="LayerNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.LayerNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LayerNode</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An abstract class used for our internal representation of a generic Layer.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    identifier: str</span>
+<span class="sd">        Identifier of the :class:`~pynever.nodes.LayerNode`.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">identifier</span> <span class="o">=</span> <span class="n">identifier</span></div>
+
+
+
+<div class="viewcode-block" id="ConcreteLayerNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ConcreteLayerNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConcreteLayerNode</span><span class="p">(</span><span class="n">LayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    An abstract class used for our internal representation of a generic Layer.</span>
+<span class="sd">    Its concrete children correspond to real network layers.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    identifier: str</span>
+<span class="sd">        Identifier of the :class:`~pynever.nodes.ConcreteLayerNode`.</span>
+<span class="sd">    in_dims: list[tuple]</span>
+<span class="sd">        Dimension of the input Tensor as a list of tuples (ndarray.shape like).</span>
+<span class="sd">    out_dim: tuple</span>
+<span class="sd">        Dimension of the output Tensor as a tuple (ndarray.shape like).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dims</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span> <span class="o">=</span> <span class="n">in_dims</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_dim</span> <span class="o">=</span> <span class="n">out_dim</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">identifier</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s2">): in_dim = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="si">}</span><span class="s2">, out_dim = </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">out_dim</span><span class="si">}</span><span class="s2">&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__repr__</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ConcreteLayerNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ConcreteLayerNode.get_input_dim">[docs]</a>
+    <span class="nd">@abc</span><span class="o">.</span><span class="n">abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Should be implemented in children depending on whether they have one or more input dimensions.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        list[tuple] | tuple</span>
+<span class="sd">            The list of input dimensions if the layer has more than one input, otherwise the first element.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span></div>
+
+
+<div class="viewcode-block" id="ConcreteLayerNode.get_output_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ConcreteLayerNode.get_output_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_output_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Procedure to get the output dimension of the layer.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        tuple</span>
+<span class="sd">            The output dimensions of the layer.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">out_dim</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ReLUNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ReLUNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReLUNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a ReLU Layer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;ReLUNode: in_dim cannot be empty&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ReLUNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ReLUNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ELUNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ELUNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ELUNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of an ELU Layer.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha: float, Optional</span>
+<span class="sd">        The alpha value for the ELU formulation (default: 1.0).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s1">&#39;ELUNode: in_dim cannot be empty&#39;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+
+<div class="viewcode-block" id="ELUNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ELUNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="CELUNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.CELUNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CELUNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a CELU Layer.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    alpha: float, Optional</span>
+<span class="sd">        The alpha value for the CELU formulation (default: 1.0).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;CELUNode: in_dim cannot be empty&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+
+<div class="viewcode-block" id="CELUNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.CELUNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LeakyReLUNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.LeakyReLUNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LeakyReLUNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Leaky ReLU Layer.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    negative_slope: float, Optional</span>
+<span class="sd">        Controls the angle of the negative slope (default: 1e-2).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">negative_slope</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-2</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;LeakyReLUNode: in_dim cannot be empty&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">negative_slope</span> <span class="o">=</span> <span class="n">negative_slope</span>
+
+<div class="viewcode-block" id="LeakyReLUNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.LeakyReLUNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SigmoidNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.SigmoidNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SigmoidNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Sigmoid Layer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;SigmoidNode: in_dim cannot be void&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SigmoidNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.SigmoidNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TanhNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.TanhNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TanhNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Tanh Layer.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;TanhNode: in_dim cannot be void&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+<div class="viewcode-block" id="TanhNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.TanhNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FullyConnectedNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.FullyConnectedNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FullyConnectedNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Fully Connected layer</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    in_features: int</span>
+<span class="sd">        Number of input features of the fully connected layer.</span>
+<span class="sd">    out_features: int</span>
+<span class="sd">        Number of output features of the fully connected layer.</span>
+<span class="sd">    weight: torch.Tensor, Optional</span>
+<span class="sd">        Tensor containing the weight parameters of the fully connected layer.</span>
+<span class="sd">    bias: torch.Tensor, Optional</span>
+<span class="sd">        Tensor containing the bias parameters of the fully connected layer.</span>
+<span class="sd">    has_bias: bool, Optional</span>
+<span class="sd">        Flag True if the fully connected layer has bias, False otherwise (default: True)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">out_features</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">weight</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">has_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;FullyConnectedNode: in_dim cannot be empty&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">in_dim</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="n">out_features</span><span class="p">,)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="n">in_features</span> <span class="o">=</span> <span class="n">in_dim</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_features</span> <span class="o">=</span> <span class="n">in_features</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_features</span> <span class="o">=</span> <span class="n">out_features</span>
+
+        <span class="c1"># We assume the Linear operation is x * W^T</span>
+        <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="n">out_features</span><span class="p">,</span> <span class="n">in_features</span><span class="p">))</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">in_features</span><span class="p">),</span>
+                                                                              <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">in_features</span><span class="p">))</span>
+
+        <span class="n">weight_error</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Weight dimensions should be equal to out_features (</span><span class="si">{</span><span class="n">out_features</span><span class="si">}</span><span class="s2">) &quot;</span> \
+                       <span class="sa">f</span><span class="s2">&quot;and in_features (</span><span class="si">{</span><span class="n">in_features</span><span class="si">}</span><span class="s2">) respectively.&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">out_features</span> <span class="ow">and</span> <span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">in_features</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="n">weight_error</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">has_bias</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">bias</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">out_features</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">bias</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">out_features</span><span class="p">,):</span>
+                    <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bias shape is wrong: it should be equal to (</span><span class="si">{</span><span class="n">out_features</span><span class="si">}</span><span class="s2">,)&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bias</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_bias</span> <span class="o">=</span> <span class="n">has_bias</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">bias</span>
+
+<div class="viewcode-block" id="FullyConnectedNode.get_layer_bias_as_two_dimensional">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.FullyConnectedNode.get_layer_bias_as_two_dimensional">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_layer_bias_as_two_dimensional</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This method expands the bias since they are memorized</span>
+<span class="sd">        like one-dimensional vectors in FC nodes.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        torch.Tensor</span>
+<span class="sd">            The new bias with explicit dimensions</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">torch</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="FullyConnectedNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.FullyConnectedNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="BatchNormNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.BatchNormNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">BatchNormNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a one dimensional Batch Normalization Layer.</span>
+<span class="sd">    N.B. There are some problem for compatibility between pytorch and onnx: pytorch provide 3 different kind</span>
+<span class="sd">    of batchnorm layers which supports [(N, C) or (N, C, L)], (N, C, H, W) and (N, C, D, H, W) dimensional inputs</span>
+<span class="sd">    respectively (BatchNorm1D, BatchNorm2D and BatchNorm3D). The batchnorm operation is always applied to the</span>
+<span class="sd">    C dimension (N is the batch dimension which we do not keep track of). ONNX accepts input in the form of</span>
+<span class="sd">    (N, C, D1, ... , Dn) where N is the batch dimension and C is the dimension to which the batchnorm is applied.</span>
+<span class="sd">    It should also be noted that at present the pytorch constructors do not support the setting of weight and</span>
+<span class="sd">    bias explicitly.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    num_features: int</span>
+<span class="sd">        Number of input and output feature of the Batch Normalization Layer.</span>
+<span class="sd">    weight: torch.Tensor, Optional</span>
+<span class="sd">        Tensor containing the weight parameters of the Batch Normalization Layer. (default: None)</span>
+<span class="sd">    bias: torch.Tensor, Optional</span>
+<span class="sd">        Tensor containing the bias parameter of the Batch Normalization Layer. (default: None)</span>
+<span class="sd">    running_mean: torch.Tensor, Optional</span>
+<span class="sd">        Tensor containing the running mean parameter of the Batch Normalization Layer. (default: None)</span>
+<span class="sd">    running_var: torch.Tensor, Optional</span>
+<span class="sd">        Tensor containing the running var parameter of the Batch Normalization Layer. (default: None)</span>
+<span class="sd">    eps: float, Optional</span>
+<span class="sd">        Value added to the denominator for numerical stability (default: 1e-5).</span>
+<span class="sd">    momentum: float, Optional</span>
+<span class="sd">        Value used for the running_mean and running_var computation. Can be set to None</span>
+<span class="sd">        for cumulative moving average (default: 0.1)</span>
+<span class="sd">    affine: bool, Optional</span>
+<span class="sd">        When set to True, the module has learnable affine parameter (default: True).</span>
+<span class="sd">    track_running_stats: bool, Optional</span>
+<span class="sd">        When set to True, the module tracks the running mean and variance, when set to false the module</span>
+<span class="sd">        does not track such statistics and always uses batch statistics in both training and eval modes (default: True).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">running_mean</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">running_var</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">eps</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1e-5</span><span class="p">,</span>
+                 <span class="n">momentum</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
+                 <span class="n">affine</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">track_running_stats</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+
+        <span class="c1"># Since we don&#39;t consider the batch dimension in our representation we assume that the first dimension of</span>
+        <span class="c1"># in_dim is always the dimension on which the normalization is applied.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;in_dim cannot be empty&quot;</span><span class="p">)</span>
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="n">num_features</span> <span class="o">=</span> <span class="n">in_dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">num_features</span> <span class="o">=</span> <span class="n">num_features</span>
+
+        <span class="k">if</span> <span class="n">track_running_stats</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">running_mean</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">running_mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_features</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">running_var</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">running_var</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_features</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">running_var</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">num_features</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;The dimension of the running_var should be equal to num_features&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">running_mean</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">num_features</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;The dimension of the running_mean should be equal to num_features&quot;</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">running_mean</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">running_var</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">num_features</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">bias</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_features</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">weight</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">num_features</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;The dimension of the weight should be equal to num_features&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">bias</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">num_features</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;The dimension of the bias should be equal to num_features&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">bias</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running_mean</span> <span class="o">=</span> <span class="n">running_mean</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">running_var</span> <span class="o">=</span> <span class="n">running_var</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">eps</span> <span class="o">=</span> <span class="n">eps</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">momentum</span> <span class="o">=</span> <span class="n">momentum</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">affine</span> <span class="o">=</span> <span class="n">affine</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">track_running_stats</span> <span class="o">=</span> <span class="n">track_running_stats</span>
+
+<div class="viewcode-block" id="BatchNormNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.BatchNormNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ConvNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ConvNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConvNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Convolutional layer.</span>
+<span class="sd">    Also in this case the pytorch and onnx representation present incompatibilities. As in Batchnorm pytorch</span>
+<span class="sd">    provide 3 different class for convolution based on the dimensionality of the input considered.</span>
+<span class="sd">    Moreover, the padding is forced to be symmetric.</span>
+<span class="sd">    The dimensionality supported for the input are (N, C, L), (N, C, H, W) and (N, C, D, H, W).</span>
+<span class="sd">    In ONNX the padding can be asymmetric and the dimensionality supported is (N, C, D1, ... , Dn) where D1, ... Dn</span>
+<span class="sd">    are the dimension on which the convolution is applied</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    in_channels: int</span>
+<span class="sd">        Number of input channels in Conv Layer.</span>
+<span class="sd">    out_channels: int</span>
+<span class="sd">        Number of output channels in Conv Layer.</span>
+<span class="sd">    kernel_size: tuple</span>
+<span class="sd">        The size of the kernel. Should have size equal to the number of dimension n</span>
+<span class="sd">        (we don&#39;t count the channel dimension).</span>
+<span class="sd">    stride: tuple</span>
+<span class="sd">        Stride along each spatial axis. Should have size equal to the number of dimension n</span>
+<span class="sd">        (we don&#39;t count the channel dimension).</span>
+<span class="sd">    padding: tuple</span>
+<span class="sd">        Padding for the beginning and ending along each spatial axis.</span>
+<span class="sd">        Padding format should be as follows [x1_begin, x2_begin...x1_end, x2_end,...], where xi_begin the number of</span>
+<span class="sd">        pixels added at the beginning of axis `i` and xi_end, the number of pixels added at the end of axis `i`.</span>
+<span class="sd">        Should have size equal to two times the number of dimension n (we don&#39;t count the channel dimension).</span>
+<span class="sd">    dilation: tuple</span>
+<span class="sd">        Dilation value along each spatial axis of the filter</span>
+<span class="sd">    groups: int</span>
+<span class="sd">        Number of groups input channels and output channels are divided into</span>
+<span class="sd">    has_bias: bool, Optional</span>
+<span class="sd">        Flag True if the convolutional layer has bias, False otherwise (default: False)</span>
+<span class="sd">    bias: torch.Tensor, Optional</span>
+<span class="sd">        Tensor containing the bias parameter of the Conv Layer (default: None)</span>
+<span class="sd">    weight: torch.Tensor, Optional</span>
+<span class="sd">        Tensor containing the weight parameters of the Conv layer (default: None)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">kernel_size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">stride</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">padding</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">dilation</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">groups</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+                 <span class="n">has_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">bias</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">weight</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;The input dimension must be at least 2 (one for the channel and one for the &quot;</span>
+                                        <span class="s2">&quot;rest)&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of kernel should be equal to the size of in_dim - 1&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stride</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of stride should be equal to the size of in_dim - 1&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">padding</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of padding should be equal to 2 * size of kernel_size&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dilation</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of dilation should be equal to the size of in_dim - 1&quot;</span><span class="p">)</span>
+
+        <span class="n">in_channels</span> <span class="o">=</span> <span class="n">in_dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">in_channels</span> <span class="o">%</span> <span class="n">groups</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">out_channels</span> <span class="o">%</span> <span class="n">groups</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;in_channels and out_channels must be divisible by groups&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">in_channels</span> <span class="o">!=</span> <span class="n">in_dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;in_channel should be equals to the number of channels of the input &quot;</span>
+                                        <span class="sa">f</span><span class="s2">&quot;(in_dim[0] = </span><span class="si">{</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">)&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="p">(</span><span class="n">out_channels</span><span class="p">,)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)):</span>
+            <span class="n">aux</span> <span class="o">=</span> <span class="p">((</span><span class="n">in_dim</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">padding</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">padding</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span>
+                    <span class="n">dilation</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">kernel_size</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">stride</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="n">aux</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
+            <span class="n">out_dim</span> <span class="o">+=</span> <span class="p">(</span><span class="n">aux</span><span class="p">,)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">in_channels</span> <span class="o">=</span> <span class="n">in_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">out_channels</span> <span class="o">=</span> <span class="n">out_channels</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span> <span class="o">=</span> <span class="n">kernel_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stride</span> <span class="o">=</span> <span class="n">stride</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">padding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dilation</span> <span class="o">=</span> <span class="n">dilation</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">groups</span> <span class="o">=</span> <span class="n">groups</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">has_bias</span> <span class="o">=</span> <span class="n">has_bias</span>
+
+        <span class="n">k</span> <span class="o">=</span> <span class="n">groups</span> <span class="o">/</span> <span class="nb">float</span><span class="p">(</span><span class="n">in_channels</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">))))</span>
+
+        <span class="n">weight_size</span> <span class="o">=</span> <span class="p">[</span><span class="n">out_channels</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">in_channels</span> <span class="o">/</span> <span class="n">groups</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">kernel_size</span><span class="p">:</span>
+            <span class="n">weight_size</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="n">weight_size</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">weight_size</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">weight</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">weight</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">FloatTensor</span><span class="p">(</span><span class="o">*</span><span class="n">weight_size</span><span class="p">)</span><span class="o">.</span><span class="n">uniform_</span><span class="p">(</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">k</span><span class="p">),</span> <span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">k</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">weight</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="n">weight_size</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Weight shape is wrong: it should be </span><span class="si">{</span><span class="n">weight_size</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">has_bias</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">bias</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">bias</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">bias</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="n">out_channels</span><span class="p">,):</span>
+                    <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Bias shape is wrong: it should be equal to (</span><span class="si">{</span><span class="n">out_channels</span><span class="si">}</span><span class="s2">,)&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">bias</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias</span> <span class="o">=</span> <span class="n">bias</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight</span> <span class="o">=</span> <span class="n">weight</span>
+
+<div class="viewcode-block" id="ConvNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ConvNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="AveragePoolNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.AveragePoolNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">AveragePoolNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a AveragePool layer.</span>
+<span class="sd">    Also in this case the pytorch and onnx representation present incompatibilities. As in Batchnorm pytorch</span>
+<span class="sd">    provide 3 different class for pooling based on the dimensionality of the input considered.</span>
+<span class="sd">    Moreover, the padding is forced to be symmetric and the parameter divisor_override is present (it is not clear</span>
+<span class="sd">    what is its effect). The dimensionality supported for the input are (N, C, L), (N, C, H, W) and (N, C, D, H, W).</span>
+<span class="sd">    In ONNX the padding can be asymmetric and the dimensionality supported is (N, C, D1, ... , Dn) where D1, ... Dn</span>
+<span class="sd">    are the dimension on which the pooling is applied</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kernel_size: tuple</span>
+<span class="sd">        The size of the kernel. Should have size equal to the number of dimension n</span>
+<span class="sd">        (we don&#39;t count the channel dimension).</span>
+<span class="sd">    stride: tuple</span>
+<span class="sd">        Stride along each spatial axis. Should have size equal to the number of dimension n</span>
+<span class="sd">        (we don&#39;t count the channel dimension).</span>
+<span class="sd">    padding: tuple</span>
+<span class="sd">        Padding for the beginning and ending along each spatial axis.</span>
+<span class="sd">        Padding format should be as follows [x1_begin, x2_begin...x1_end, x2_end,...], where xi_begin the number of</span>
+<span class="sd">        pixels added at the beginning of axis `i` and xi_end, the number of pixels added at the end of axis `i`.</span>
+<span class="sd">        Should have size equal to two times the number of dimension n (we don&#39;t count the channel dimension).</span>
+<span class="sd">    ceil_mode: bool, Optional</span>
+<span class="sd">        In order to use ceil mode. (default: False)</span>
+<span class="sd">    count_include_pad: bool, Optional</span>
+<span class="sd">        Whether include pad pixels when calculating values for the edges (default: False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">stride</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+                 <span class="n">padding</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">ceil_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">count_include_pad</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;The input dimension must be at least 2 (one for the channel and one for the &quot;</span>
+                                        <span class="s2">&quot;rest)&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of kernel should be equal to the size of in_dim - 1&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stride</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of stride should be equal to the size of in_dim - 1&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">padding</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of padding should be equal to 2 * size of kernel_size&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">0</span><span class="p">],)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)):</span>
+
+            <span class="n">aux</span> <span class="o">=</span> <span class="p">((</span><span class="n">in_dim</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">padding</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">padding</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">kernel_size</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">stride</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="n">ceil_mode</span><span class="p">:</span>
+                <span class="n">aux</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aux</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
+
+            <span class="n">out_dim</span> <span class="o">+=</span> <span class="p">(</span><span class="n">aux</span><span class="p">,)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span> <span class="o">=</span> <span class="n">kernel_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stride</span> <span class="o">=</span> <span class="n">stride</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">padding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ceil_mode</span> <span class="o">=</span> <span class="n">ceil_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count_include_pad</span> <span class="o">=</span> <span class="n">count_include_pad</span>
+
+<div class="viewcode-block" id="AveragePoolNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.AveragePoolNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="MaxPoolNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.MaxPoolNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MaxPoolNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a MaxPool layer.</span>
+<span class="sd">    Also in this case the pytorch and onnx representation present incompatibilities. As in Batchnorm pytorch</span>
+<span class="sd">    provide 3 different class for pooling based on the dimensionality of the input considered.</span>
+<span class="sd">    Moreover, the padding is forced to be symmetric. The dimensionality supported for the input</span>
+<span class="sd">    are (N, C, L), (N, C, H, W) and (N, C, D, H, W).</span>
+<span class="sd">    In ONNX the padding can be asymmetric and the dimensionality supported is (N, C, D1, ... , Dn) where D1, ... Dn</span>
+<span class="sd">    are the dimension on which the pooling is applied</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    kernel_size: tuple</span>
+<span class="sd">        The size of the kernel. Should have size equal to the number of dimension n</span>
+<span class="sd">        (we don&#39;t count the channel dimension).</span>
+<span class="sd">    stride: tuple</span>
+<span class="sd">        Stride along each spatial axis. Should have size equal to the number of dimension n</span>
+<span class="sd">        (we don&#39;t count the channel dimension).</span>
+<span class="sd">    padding: tuple</span>
+<span class="sd">        Padding for the beginning and ending along each spatial axis.</span>
+<span class="sd">        Padding format should be as follows [x1_begin, x2_begin...x1_end, x2_end,...], where xi_begin the number of</span>
+<span class="sd">        pixels added at the beginning of axis `i` and xi_end, the number of pixels added at the end of axis `i`.</span>
+<span class="sd">        Should have size equal to two times the number of dimension n (we don&#39;t count the channel dimension).</span>
+<span class="sd">    dilation: tuple</span>
+<span class="sd">        Dilation value along each spatial axis of the filter</span>
+<span class="sd">    ceil_mode: bool, Optional</span>
+<span class="sd">        In order to use ceil mode. (default: False)</span>
+<span class="sd">    return_indices: bool</span>
+<span class="sd">        If True it will return the max indices along with the outputs (default: False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">kernel_size</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">stride</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span>
+                 <span class="n">padding</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">dilation</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">ceil_mode</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">return_indices</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;The input dimension must be at least 2 (one for the channel and one for the &quot;</span>
+                                        <span class="s2">&quot;rest)&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of kernel should be equal to the size of in_dim - 1&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">stride</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of stride should be equal to the size of in_dim - 1&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">padding</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">kernel_size</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of padding should be equal to 2 * size of kernel_size&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dilation</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;Size of dilation should be equal to the size of in_dim - 1&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">0</span><span class="p">],)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)):</span>
+
+            <span class="n">aux</span> <span class="o">=</span> <span class="p">((</span><span class="n">in_dim</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">padding</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">padding</span><span class="p">[</span><span class="n">i</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">2</span><span class="p">]</span> <span class="o">-</span>
+                    <span class="n">dilation</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">kernel_size</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="n">stride</span><span class="p">[</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span> <span class="o">+</span> <span class="mi">1</span>
+
+            <span class="k">if</span> <span class="n">ceil_mode</span><span class="p">:</span>
+                <span class="n">aux</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">aux</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">aux</span><span class="p">)</span>
+
+            <span class="n">out_dim</span> <span class="o">+=</span> <span class="p">(</span><span class="n">aux</span><span class="p">,)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_size</span> <span class="o">=</span> <span class="n">kernel_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">stride</span> <span class="o">=</span> <span class="n">stride</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">padding</span> <span class="o">=</span> <span class="n">padding</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ceil_mode</span> <span class="o">=</span> <span class="n">ceil_mode</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">return_indices</span> <span class="o">=</span> <span class="n">return_indices</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dilation</span> <span class="o">=</span> <span class="n">dilation</span>
+
+<div class="viewcode-block" id="MaxPoolNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.MaxPoolNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="LRNNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.LRNNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">LRNNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a LocalResponseNormalization Layer.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    size: int</span>
+<span class="sd">        Amount of neighbouring channels used for normalization</span>
+<span class="sd">    alpha: float, Optional</span>
+<span class="sd">        Multiplicative factor (default: 0.0001)</span>
+<span class="sd">    beta: float, Optional</span>
+<span class="sd">        Exponent. (default: 0.75)</span>
+<span class="sd">    k: float, Optional</span>
+<span class="sd">        Additive factor (default: 1.0)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0001</span><span class="p">,</span> <span class="n">beta</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.75</span><span class="p">,</span>
+                 <span class="n">k</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;The input dimension must be at least 2 (one for the channel and one for the &quot;</span>
+                                        <span class="s2">&quot;rest)&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">size</span> <span class="o">=</span> <span class="n">size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">=</span> <span class="n">beta</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">k</span> <span class="o">=</span> <span class="n">k</span>
+
+<div class="viewcode-block" id="LRNNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.LRNNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SoftMaxNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.SoftMaxNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SoftMaxNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a SoftMax Layer.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    axis: int, Optional</span>
+<span class="sd">        A dimension along which Softmax will be computed (so every slice along dim will sum to 1)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;in_dim cannot be void&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">axis</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span>
+
+<div class="viewcode-block" id="SoftMaxNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.SoftMaxNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="UnsqueezeNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.UnsqueezeNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsqueezeNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of an Unsqueeze Layer.</span>
+<span class="sd">    We follow the ONNX operator convention for attributes and definitions.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    axes: tuple</span>
+<span class="sd">        List of indices at which to insert the singleton dimension.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">axes</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;in_dim cannot be void&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">axes</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;All elements in axes must be unique&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;axes cannot be void&quot;</span><span class="p">)</span>
+
+        <span class="n">check_axes_values</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">e</span> <span class="o">&lt;</span> <span class="o">-</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">))</span> <span class="ow">or</span> <span class="n">e</span> <span class="o">&gt;</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">):</span>
+                <span class="n">check_axes_values</span> <span class="o">=</span> <span class="kc">False</span>
+                <span class="k">break</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">check_axes_values</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Every axes element must be in [</span><span class="si">{</span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">))</span><span class="si">}</span><span class="s2">, &quot;</span>
+                                  <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nb">len</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+
+        <span class="c1"># We add the singleton dimensions to the out_dim</span>
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">out_dim</span><span class="p">)</span>
+        <span class="n">temp_axes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">axes</span><span class="p">)</span>
+        <span class="n">temp_axes</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">axes</span><span class="p">:</span>
+            <span class="n">out_dim</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">e</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">axes</span> <span class="o">=</span> <span class="n">axes</span>
+
+<div class="viewcode-block" id="UnsqueezeNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.UnsqueezeNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ReshapeNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ReshapeNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReshapeNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Reshape layer.</span>
+<span class="sd">    We follow the ONNX operator convention for attributes and definitions.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    shape: tuple</span>
+<span class="sd">        tuple which specifies the output shape</span>
+<span class="sd">    allow_zero: bool, Optional</span>
+<span class="sd">        By default, when any value in the &#39;shape&#39; input is equal to zero the corresponding dimension value</span>
+<span class="sd">        is copied from the input tensor dynamically. allowzero=1 indicates that if any value in the &#39;shape&#39; input is</span>
+<span class="sd">        set to zero, the zero value is honored, similar to NumPy. (default: False)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">shape</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">allow_zero</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="nb">list</span><span class="p">(</span><span class="n">shape</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;At most one dimension of the new shape can be -1&quot;</span><span class="p">)</span>
+
+        <span class="n">temp_shape</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">shape</span><span class="p">)):</span>
+            <span class="n">e</span> <span class="o">=</span> <span class="n">shape</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">allow_zero</span><span class="p">:</span>
+                <span class="n">temp_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">e</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">allow_zero</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">):</span>
+                    <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;0 value for new shape in position </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2"> but original shape has only &quot;</span>
+                                                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span><span class="si">}</span><span class="s2"> elements&quot;</span><span class="p">)</span>
+                <span class="n">temp_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">temp_shape</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+
+        <span class="c1"># We leverage numpy reshape to compute our output dimension. If the reshape encounter a new shape which is</span>
+        <span class="c1"># not valid numpy raise an exception which will be eventually caught in the gui.</span>
+        <span class="n">temp_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="n">temp_output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">temp_input</span><span class="p">,</span> <span class="n">temp_shape</span><span class="p">)</span>
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">temp_output</span><span class="o">.</span><span class="n">shape</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">shape</span> <span class="o">=</span> <span class="n">shape</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">allow_zero</span> <span class="o">=</span> <span class="n">allow_zero</span>
+
+<div class="viewcode-block" id="ReshapeNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ReshapeNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="FlattenNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.FlattenNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">FlattenNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Flatten layer. We follow the ONNX operator</span>
+<span class="sd">    convention for attributes and definitions.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    axis: int, Optional</span>
+<span class="sd">        Indicate up to which input dimensions (exclusive) should be flattened to the outer dimension of the output.</span>
+<span class="sd">        The value for axis must be in the range [-r, r], where r is the rank of the input tensor. Negative value</span>
+<span class="sd">        means counting dimensions from the back. When axis = 0, the shape of the output tensor is</span>
+<span class="sd">        (1, (d_0 X d_1 ... d_n)), where the shape of the input tensor is (d_0, d_1, ... d_n).</span>
+<span class="sd">        N.B: it works assuming the initial batch dimension. (default: 0)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">axis</span> <span class="o">&lt;=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)):</span>
+            <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Axis must be in [</span><span class="si">{</span><span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span><span class="si">}</span><span class="s2">]&quot;</span><span class="p">)</span>
+
+        <span class="n">temp_input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="n">new_shape</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,)</span> <span class="k">if</span> <span class="n">axis</span> <span class="o">==</span> <span class="mi">0</span> <span class="k">else</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">in_dim</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">axis</span><span class="p">])))),</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># We leverage reshape to compute our output dimension. If the reshape encounter a new shape which is</span>
+        <span class="c1"># not valid numpy raise an exception which will be eventually caught in the gui.</span>
+        <span class="n">temp_output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">temp_input</span><span class="p">,</span> <span class="n">new_shape</span><span class="p">)</span>
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">temp_output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span>
+
+<div class="viewcode-block" id="FlattenNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.FlattenNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="DropoutNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.DropoutNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">DropoutNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Dropout Layer.</span>
+<span class="sd">    The inplace parameter of pytorch and the seed attribute and training_mode of onnx are not supported.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p: float, Optional</span>
+<span class="sd">        Probability of an element to be zeroed (default: 0.5)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">p</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">):</span>
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">p</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">p</span> <span class="o">=</span> <span class="n">p</span>
+
+<div class="viewcode-block" id="DropoutNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.DropoutNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="TransposeNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.TransposeNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">TransposeNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Dropout Layer.</span>
+<span class="sd">    The inplace parameter of pytorch and the seed attribute and training_mode of onnx are not supported.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    perm: list, Optional</span>
+<span class="sd">        Permutation to apply to the input dimensions</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dim</span><span class="p">:</span> <span class="nb">tuple</span><span class="p">,</span> <span class="n">perm</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">perm</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">perm</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">perm</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;The perm parameter must be be a permutation of the input dimensions.&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">torch</span><span class="o">.</span><span class="n">Tensor</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)[</span><span class="n">perm</span><span class="p">])</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="p">[</span><span class="n">in_dim</span><span class="p">],</span> <span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">perm</span> <span class="o">=</span> <span class="n">perm</span>
+
+<div class="viewcode-block" id="TransposeNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.TransposeNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="ConcatNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ConcatNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConcatNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Concat Layer.</span>
+<span class="sd">    Concatenate two tensors into a single tensor. All input tensors must have the same shape,</span>
+<span class="sd">    except for the dimension size of the axis to concatenate on.</span>
+
+<span class="sd">    Attributes</span>
+<span class="sd">    ----------</span>
+<span class="sd">    axis: int, Optional</span>
+<span class="sd">        Which axis to concat on. A negative value means counting dimensions from the back.</span>
+<span class="sd">        Accepted range is [-r, r-1] where r is the number of dimension of the input (default: -1).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dims</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">],</span> <span class="n">axis</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+
+        <span class="k">if</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">jolly_dim</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">+</span> <span class="n">axis</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">jolly_dim</span> <span class="o">=</span> <span class="n">axis</span>
+
+        <span class="n">jolly_dim_size</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">in_dim</span> <span class="ow">in</span> <span class="n">in_dims</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All the input tensor should have the same number of dimensions.&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">axis</span> <span class="o">&lt;</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="ow">or</span> <span class="n">axis</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">OutOfRangeError</span><span class="p">(</span><span class="n">axis</span><span class="p">,</span> <span class="o">-</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">),</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">!=</span> <span class="n">jolly_dim</span> <span class="ow">and</span> <span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">in_dim</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All input tensors must have the same shape, except for dimension&quot;</span>
+                                                <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="n">jolly_dim</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+
+            <span class="n">jolly_dim_size</span> <span class="o">+=</span> <span class="n">in_dim</span><span class="p">[</span><span class="n">jolly_dim</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">axis</span> <span class="o">=</span> <span class="n">axis</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">out_dim</span><span class="p">[</span><span class="n">jolly_dim</span><span class="p">]</span> <span class="o">=</span> <span class="n">jolly_dim_size</span>
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">out_dim</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">in_dims</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ConcatNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.ConcatNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="SumNode">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.SumNode">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">SumNode</span><span class="p">(</span><span class="n">ConcreteLayerNode</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    A class used for our internal representation of a Sum Layer.</span>
+<span class="sd">    Element-wise sum of each of the input tensors.</span>
+<span class="sd">    All inputs and outputs must have the same data type.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">identifier</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">in_dims</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]):</span>
+
+        <span class="k">for</span> <span class="n">in_dim</span> <span class="ow">in</span> <span class="n">in_dims</span><span class="p">:</span>
+
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;All the input tensor should have the same number of dimensions.&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">in_dim</span><span class="p">)):</span>
+                <span class="k">if</span> <span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="n">in_dim</span><span class="p">[</span><span class="n">i</span><span class="p">]:</span>
+                    <span class="k">raise</span> <span class="n">InvalidDimensionError</span><span class="p">(</span><span class="s2">&quot;All input tensors must have the same shape.&quot;</span><span class="p">)</span>
+
+        <span class="n">out_dim</span> <span class="o">=</span> <span class="n">in_dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">identifier</span><span class="p">,</span> <span class="n">in_dims</span><span class="p">,</span> <span class="n">out_dim</span><span class="p">)</span>
+
+<div class="viewcode-block" id="SumNode.get_input_dim">
+<a class="viewcode-back" href="../../API/1_Nodes.html#pynever.nodes.SumNode.get_input_dim">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_input_dim</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">tuple</span><span class="p">]:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">in_dims</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, NeverTools.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
