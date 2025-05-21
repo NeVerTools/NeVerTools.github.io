@@ -42,9 +42,13 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Setup</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../Setup/setup.html">Installation and Setup</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../Guide/usage.html">Verification</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul class="current">
@@ -53,12 +57,10 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Training</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.training.TrainingStrategy"><code class="docutils literal notranslate"><span class="pre">TrainingStrategy</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.training.TrainingStrategy.train"><code class="docutils literal notranslate"><span class="pre">TrainingStrategy.train()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id0"><code class="docutils literal notranslate"><span class="pre">TrainingStrategy.train()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.training.TestingStrategy"><code class="docutils literal notranslate"><span class="pre">TestingStrategy</span></code></a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.training.TestingStrategy.test"><code class="docutils literal notranslate"><span class="pre">TestingStrategy.test()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id1"><code class="docutils literal notranslate"><span class="pre">TestingStrategy.test()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.training.PytorchTraining"><code class="docutils literal notranslate"><span class="pre">PytorchTraining</span></code></a><ul>
@@ -119,6 +121,9 @@
              
   <section id="module-pynever.strategies.training">
 <span id="training"></span><h1>Training<a class="headerlink" href="#module-pynever.strategies.training" title="Link to this heading"></a></h1>
+<p>This module contains the classes to train neural networks. It follows the Strategy design pattern providing the abstract
+interfaces <code class="docutils literal notranslate"><span class="pre">TrainingStrategy</span></code> and <code class="docutils literal notranslate"><span class="pre">TestingStrategy</span></code>.
+At the moment, we provide only a single training and testing strategy using PyTorch.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.training.TrainingStrategy">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.training.</span></span><span class="sig-name descname"><span class="pre">TrainingStrategy</span></span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TrainingStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TrainingStrategy" title="Link to this definition"></a></dt>
@@ -126,13 +131,7 @@
 <p>An abstract class used to represent a Training Strategy.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.training.TrainingStrategy.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">NeuralNetwork</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TrainingStrategy.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TrainingStrategy.train" title="Link to this definition"></a></dt>
-<dd><p>Train the neural network of interest using a training strategy determined in the concrete children.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id0">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TrainingStrategy.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id0" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TrainingStrategy.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TrainingStrategy.train" title="Link to this definition"></a></dt>
 <dd><p>Train the neural network of interest using a testing strategy determined in the concrete children.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -160,13 +159,7 @@ dataset.</p>
 <p>An abstract class used to represent a Testing Strategy.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.training.TestingStrategy.test">
-<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">NeuralNetwork</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TestingStrategy.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TestingStrategy.test" title="Link to this definition"></a></dt>
-<dd><p>Test the neural network of interest using a testing strategy determined in the concrete children.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="id1">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TestingStrategy.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#id1" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TestingStrategy.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TestingStrategy.test" title="Link to this definition"></a></dt>
 <dd><p>Test the neural network of interest using a testing strategy determined in the concrete children.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -220,7 +213,7 @@ assumed to be the parameters to optimize</p>
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.loss_function">
 <span class="sig-name descname"><span class="pre">loss_function</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.loss_function" title="Link to this definition"></a></dt>
 <dd><p>Loss function for the training strategy. We assume it to take as parameters two pytorch Tensor
-corresponding to the output of the network and the target. Other parameter should be given as attribute of
+corresponding to the output of the network and the target. Other parameters should be given as attributes of
 the callable object.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>

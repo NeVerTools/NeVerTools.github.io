@@ -39,9 +39,13 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Setup</span></p>
+              <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="../../../Setup/setup.html">Installation and Setup</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Usage</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Guide/usage.html">Verification</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul>
@@ -76,7 +80,12 @@
            <div itemprop="articleBody">
              
   <h1>Source code for pynever.strategies.training</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains the classes to train neural networks. It follows the Strategy design pattern providing the abstract</span>
+<span class="sd">interfaces ``TrainingStrategy`` and ``TestingStrategy``.</span>
+<span class="sd">At the moment, we provide only a single training and testing strategy using PyTorch.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">abc</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
@@ -100,12 +109,6 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TrainingStrategy</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An abstract class used to represent a Training Strategy.</span>
-
-<span class="sd">    Methods</span>
-<span class="sd">    ----------</span>
-<span class="sd">    train(NeuralNetwork, Dataset)</span>
-<span class="sd">        Train the neural network of interest using a training strategy determined in the concrete children.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TrainingStrategy.train">
@@ -139,12 +142,6 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">TestingStrategy</span><span class="p">(</span><span class="n">abc</span><span class="o">.</span><span class="n">ABC</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    An abstract class used to represent a Testing Strategy.</span>
-
-<span class="sd">    Methods</span>
-<span class="sd">    ----------</span>
-<span class="sd">    test(NeuralNetwork, Dataset)</span>
-<span class="sd">        Test the neural network of interest using a testing strategy determined in the concrete children.</span>
-
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="TestingStrategy.test">
@@ -191,7 +188,7 @@
 
 <span class="sd">    loss_function: Callable</span>
 <span class="sd">        Loss function for the training strategy. We assume it to take as parameters two pytorch Tensor</span>
-<span class="sd">        corresponding to the output of the network and the target. Other parameter should be given as attribute of</span>
+<span class="sd">        corresponding to the output of the network and the target. Other parameters should be given as attributes of</span>
 <span class="sd">        the callable object.</span>
 
 <span class="sd">    n_epochs: int</span>
