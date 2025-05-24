@@ -126,12 +126,12 @@ interfaces <code class="docutils literal notranslate"><span class="pre">Training
 At the moment, we provide only a single training and testing strategy using PyTorch.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.training.TrainingStrategy">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.training.</span></span><span class="sig-name descname"><span class="pre">TrainingStrategy</span></span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TrainingStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TrainingStrategy" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.training.</span></span><span class="sig-name descname"><span class="pre">TrainingStrategy</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TrainingStrategy" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>An abstract class used to represent a Training Strategy.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.training.TrainingStrategy.train">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TrainingStrategy.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TrainingStrategy.train" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TrainingStrategy.train" title="Link to this definition"></a></dt>
 <dd><p>Train the neural network of interest using a testing strategy determined in the concrete children.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -154,12 +154,12 @@ dataset.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.training.TestingStrategy">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.training.</span></span><span class="sig-name descname"><span class="pre">TestingStrategy</span></span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TestingStrategy"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TestingStrategy" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.training.</span></span><span class="sig-name descname"><span class="pre">TestingStrategy</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TestingStrategy" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
 <p>An abstract class used to represent a Testing Strategy.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.training.TestingStrategy.test">
-<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#TestingStrategy.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TestingStrategy.test" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.TestingStrategy.test" title="Link to this definition"></a></dt>
 <dd><p>Test the neural network of interest using a testing strategy determined in the concrete children.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -181,14 +181,14 @@ dataset.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.training.</span></span><span class="sig-name descname"><span class="pre">PytorchTraining</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_con</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_epochs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_percentage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_con</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sch_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_patience</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoints_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#PytorchTraining"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.training.</span></span><span class="sig-name descname"><span class="pre">PytorchTraining</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_con</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_epochs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_percentage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_con</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sch_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_patience</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoints_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pynever.strategies.training.TrainingStrategy" title="pynever.strategies.training.TrainingStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainingStrategy</span></code></a></p>
 <p>Class used to represent the training strategy based on the Pytorch learning framework.
 It supports different optimization algorithm, schedulers, loss function and others based on
 the attributes provided at instantiation time.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.optimizer_con">
-<span class="sig-name descname"><span class="pre">optimizer_con</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.optimizer_con" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">optimizer_con</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.optimizer_con" title="Link to this definition"></a></dt>
 <dd><p>Reference to the class constructor for the Optimizer of choice for the training strategy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -199,7 +199,7 @@ the attributes provided at instantiation time.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.opt_params">
-<span class="sig-name descname"><span class="pre">opt_params</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.opt_params" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">opt_params</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.opt_params" title="Link to this definition"></a></dt>
 <dd><p>Dictionary of the parameters to pass to the constructor of the optimizer excluding the first which is always
 assumed to be the parameters to optimize</p>
 <dl class="field-list simple">
@@ -211,7 +211,7 @@ assumed to be the parameters to optimize</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.loss_function">
-<span class="sig-name descname"><span class="pre">loss_function</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.loss_function" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">loss_function</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.loss_function" title="Link to this definition"></a></dt>
 <dd><p>Loss function for the training strategy. We assume it to take as parameters two pytorch Tensor
 corresponding to the output of the network and the target. Other parameters should be given as attributes of
 the callable object.</p>
@@ -224,7 +224,7 @@ the callable object.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.n_epochs">
-<span class="sig-name descname"><span class="pre">n_epochs</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.n_epochs" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">n_epochs</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.n_epochs" title="Link to this definition"></a></dt>
 <dd><p>Number of epochs for the training procedure.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -235,7 +235,7 @@ the callable object.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.validation_percentage">
-<span class="sig-name descname"><span class="pre">validation_percentage</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.validation_percentage" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validation_percentage</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.validation_percentage" title="Link to this definition"></a></dt>
 <dd><p>Percentage of the dataset to use as the validation set</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -246,7 +246,7 @@ the callable object.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.train_batch_size">
-<span class="sig-name descname"><span class="pre">train_batch_size</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.train_batch_size" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">train_batch_size</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.train_batch_size" title="Link to this definition"></a></dt>
 <dd><p>Dimension for the train batch size for the training procedure</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -257,7 +257,7 @@ the callable object.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.validation_batch_size">
-<span class="sig-name descname"><span class="pre">validation_batch_size</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.validation_batch_size" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">validation_batch_size</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.validation_batch_size" title="Link to this definition"></a></dt>
 <dd><p>Dimension for the validation batch size for the training procedure</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -268,7 +268,7 @@ the callable object.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.scheduler_con">
-<span class="sig-name descname"><span class="pre">scheduler_con</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.scheduler_con" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">scheduler_con</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.scheduler_con" title="Link to this definition"></a></dt>
 <dd><p>Reference to the class constructor for the Scheduler for the learning rate of choice for the training strategy
 (default: None)</p>
 <dl class="field-list simple">
@@ -280,7 +280,7 @@ the callable object.</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.sch_params">
-<span class="sig-name descname"><span class="pre">sch_params</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.sch_params" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">sch_params</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.sch_params" title="Link to this definition"></a></dt>
 <dd><p>Dictionary of the parameters to pass to the constructor of the scheduler excluding the first which is always
 assumed to be the optimizer whose learning rate must be updated. (default: None)</p>
 <dl class="field-list simple">
@@ -292,7 +292,7 @@ assumed to be the optimizer whose learning rate must be updated. (default: None)
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.precision_metric">
-<span class="sig-name descname"><span class="pre">precision_metric</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.precision_metric" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">precision_metric</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.precision_metric" title="Link to this definition"></a></dt>
 <dd><p>Function for measuring the precision of the neural network. It is used to choose the best model and to control
 the Plateau Scheduler and the early stopping. We assume it to take as parameters two pytorch Tensor
 corresponding to the output of the network and the target.It should produce a float value and such value should
@@ -307,7 +307,7 @@ Optional supplementary parameters should be given as attributes of the object. (
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.network_transform">
-<span class="sig-name descname"><span class="pre">network_transform</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.network_transform" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">network_transform</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.network_transform" title="Link to this definition"></a></dt>
 <dd><p>We provide the possibility to define a function which will be applied to the network after
 the computation of backward and before the optimizer step. In practice, we use it for the manipulation
 needed to the pruning oriented training. It should take a pytorch module (i.e., the neural network) as
@@ -321,7 +321,7 @@ input and optional supplementary parameters () should be given as attributes of 
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.train_patience">
-<span class="sig-name descname"><span class="pre">train_patience</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.train_patience" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">train_patience</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.train_patience" title="Link to this definition"></a></dt>
 <dd><p>The number of epochs in which the loss may not decrease before the
 training procedure is interrupted with early stopping (default: None).</p>
 <dl class="field-list simple">
@@ -333,7 +333,7 @@ training procedure is interrupted with early stopping (default: None).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.checkpoints_root">
-<span class="sig-name descname"><span class="pre">checkpoints_root</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.checkpoints_root" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">checkpoints_root</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.checkpoints_root" title="Link to this definition"></a></dt>
 <dd><p>Where to store the checkpoints of the training strategy. (default: ‘’)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -344,7 +344,7 @@ training procedure is interrupted with early stopping (default: None).</p>
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.verbose_rate">
-<span class="sig-name descname"><span class="pre">verbose_rate</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.verbose_rate" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">verbose_rate</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.verbose_rate" title="Link to this definition"></a></dt>
 <dd><p>After how many batch the strategy prints information about how the training is going.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -355,7 +355,7 @@ training procedure is interrupted with early stopping (default: None).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.train">
-<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#PytorchTraining.train"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.train" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">train</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.train" title="Link to this definition"></a></dt>
 <dd><p>Train the neural network of interest using a testing strategy determined in the concrete children.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -376,7 +376,7 @@ dataset.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.pytorch_training">
-<span class="sig-name descname"><span class="pre">pytorch_training</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#PytorchTraining.pytorch_training"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.pytorch_training" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">pytorch_training</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.pytorch_training" title="Link to this definition"></a></dt>
 <dd><p>Training procedure for the PyTorchNetwork.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -398,13 +398,13 @@ dataset.</p>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTesting">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.training.</span></span><span class="sig-name descname"><span class="pre">PytorchTesting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#PytorchTesting"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTesting" title="Link to this definition"></a></dt>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.training.</span></span><span class="sig-name descname"><span class="pre">PytorchTesting</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">test_batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_results</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mps</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTesting" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pynever.strategies.training.TestingStrategy" title="pynever.strategies.training.TestingStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestingStrategy</span></code></a></p>
 <p>Class used to represent the testing strategy based on the Pytorch learning framework.
 It supports different metrics measure for the correctness of the neural network.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTesting.metric">
-<span class="sig-name descname"><span class="pre">metric</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTesting.metric" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">metric</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTesting.metric" title="Link to this definition"></a></dt>
 <dd><p>Function for measuring the precision/correctness of the neural network.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -415,7 +415,7 @@ It supports different metrics measure for the correctness of the neural network.
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTesting.metric_params">
-<span class="sig-name descname"><span class="pre">metric_params</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTesting.metric_params" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">metric_params</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTesting.metric_params" title="Link to this definition"></a></dt>
 <dd><p>Supplementary parameters for the metric other than the output and the target (which should always be the first
 two parameters of the metric). It is assumed that it produce a float value and such value
 decrease for increasing correctness of the network (as the traditional loss value).</p>
@@ -428,7 +428,7 @@ decrease for increasing correctness of the network (as the traditional loss valu
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTesting.test_batch_size">
-<span class="sig-name descname"><span class="pre">test_batch_size</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTesting.test_batch_size" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">test_batch_size</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTesting.test_batch_size" title="Link to this definition"></a></dt>
 <dd><p>Dimension for the test batch size for the testing procedure</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -439,7 +439,7 @@ decrease for increasing correctness of the network (as the traditional loss valu
 
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTesting.save_results">
-<span class="sig-name descname"><span class="pre">save_results</span></span><a class="headerlink" href="#pynever.strategies.training.PytorchTesting.save_results" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">save_results</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTesting.save_results" title="Link to this definition"></a></dt>
 <dd><p>Whether to save outputs, targets and losses as attributes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
@@ -450,7 +450,7 @@ decrease for increasing correctness of the network (as the traditional loss valu
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTesting.test">
-<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pynever/strategies/training.html#PytorchTesting.test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTesting.test" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTesting.test" title="Link to this definition"></a></dt>
 <dd><p>Test the neural network of interest using a testing strategy determined in the concrete children.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
