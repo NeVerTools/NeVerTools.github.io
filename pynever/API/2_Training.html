@@ -6,14 +6,14 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Training &mdash; pyNeVer &#39;1.2.0&#39; documentation</title>
+  <title>Training &mdash; pyNeVer &#39;1.2.1&#39; documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
   
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=a8716bae"></script>
+      <script src="../_static/documentation_options.js?v=3733ff34"></script>
       <script src="../_static/doctools.js?v=9bcbadda"></script>
       <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="../_static/js/theme.js"></script>
@@ -93,6 +93,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="3_Conversion.html">Conversion</a></li>
+<li class="toctree-l1"><a class="reference internal" href="4_Verification.html">Verification</a></li>
 </ul>
 
         </div>
@@ -184,7 +185,7 @@ dataset.</p>
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.training.</span></span><span class="sig-name descname"><span class="pre">PytorchTraining</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer_con</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opt_params</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss_function</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_epochs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_percentage</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validation_batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_split</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scheduler_con</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sch_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">precision_metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">network_transform</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_patience</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checkpoints_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pynever.strategies.training.TrainingStrategy" title="pynever.strategies.training.TrainingStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">TrainingStrategy</span></code></a></p>
 <p>Class used to represent the training strategy based on the Pytorch learning framework.
-It supports different optimization algorithm, schedulers, loss function and others based on
+It supports different optimization algorithms, schedulers, loss functions and others based on
 the attributes provided at instantiation time.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.optimizer_con">
@@ -204,7 +205,7 @@ the attributes provided at instantiation time.</p>
 assumed to be the parameters to optimize</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict</p>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -285,7 +286,7 @@ the callable object.</p>
 assumed to be the optimizer whose learning rate must be updated. (default: None)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict, Optional</p>
+<dd class="field-odd"><p>dict, Optional</p>
 </dd>
 </dl>
 </dd></dl>
@@ -377,16 +378,16 @@ dataset.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.training.PytorchTraining.pytorch_training">
 <span class="sig-name descname"><span class="pre">pytorch_training</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/training.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.training.PytorchTraining.pytorch_training" title="Link to this definition"></a></dt>
-<dd><p>Training procedure for the PyTorchNetwork.</p>
+<dd><p>Training procedure using PyTorch.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>net</strong> (<a class="reference internal" href="3_Conversion.html#pynever.strategies.conversion.representation.PyTorchNetwork" title="pynever.strategies.conversion.representation.PyTorchNetwork"><em>PyTorchNetwork</em></a>) – The PyTorchNetwork to train.</p></li>
-<li><p><strong>dataset</strong> (<em>Dataset</em>) – The dataset to use for the training of the PyTorchNetwork</p></li>
+<li><p><strong>dataset</strong> (<em>Dataset</em>) – The dataset to use for the training of the <a class="reference internal" href="3_Conversion.html#pynever.strategies.conversion.representation.PyTorchNetwork" title="pynever.strategies.conversion.representation.PyTorchNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyTorchNetwork</span></code></a></p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The trained PyTorchNetwork.</p>
+<dd class="field-even"><p>The trained <a class="reference internal" href="3_Conversion.html#pynever.strategies.conversion.representation.PyTorchNetwork" title="pynever.strategies.conversion.representation.PyTorchNetwork"><code class="xref py py-class docutils literal notranslate"><span class="pre">PyTorchNetwork</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><a class="reference internal" href="3_Conversion.html#pynever.strategies.conversion.representation.PyTorchNetwork" title="pynever.strategies.conversion.representation.PyTorchNetwork">PyTorchNetwork</a></p>
@@ -421,7 +422,7 @@ two parameters of the metric). It is assumed that it produce a float value and s
 decrease for increasing correctness of the network (as the traditional loss value).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Dict</p>
+<dd class="field-odd"><p>dict</p>
 </dd>
 </dl>
 </dd></dl>
@@ -483,7 +484,7 @@ decrease for increasing correctness of the network (as the traditional loss valu
   <hr/>
 
   <div role="contentinfo">
-    <p>&#169; Copyright 2025, f&#39;NeverTools&#39;.</p>
+    <p>&#169; Copyright 2025, &#39;NeverTools&#39;.</p>
   </div>
 
   Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
