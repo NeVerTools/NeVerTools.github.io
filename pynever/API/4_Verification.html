@@ -43,7 +43,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../Setup/setup.html">Installation and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Setup/install.html">Installation and Setup</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
 <ul>
@@ -56,41 +56,50 @@
 <li class="toctree-l1"><a class="reference internal" href="2_Training.html">Training</a></li>
 <li class="toctree-l1"><a class="reference internal" href="3_Conversion.html">Conversion</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Verification</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty"><code class="docutils literal notranslate"><span class="pre">NeverProperty</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.in_coef_mat"><code class="docutils literal notranslate"><span class="pre">NeverProperty.in_coef_mat</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.in_bias_mat"><code class="docutils literal notranslate"><span class="pre">NeverProperty.in_bias_mat</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.out_coef_mat"><code class="docutils literal notranslate"><span class="pre">NeverProperty.out_coef_mat</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.out_bias_mat"><code class="docutils literal notranslate"><span class="pre">NeverProperty.out_bias_mat</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.to_numeric_bounds"><code class="docutils literal notranslate"><span class="pre">NeverProperty.to_numeric_bounds()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.to_star"><code class="docutils literal notranslate"><span class="pre">NeverProperty.to_star()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.to_smt_file"><code class="docutils literal notranslate"><span class="pre">NeverProperty.to_smt_file()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynever.strategies.verification.properties">Properties</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty"><code class="docutils literal notranslate"><span class="pre">NeverProperty</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.in_coef_mat"><code class="docutils literal notranslate"><span class="pre">NeverProperty.in_coef_mat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.in_bias_mat"><code class="docutils literal notranslate"><span class="pre">NeverProperty.in_bias_mat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.out_coef_mat"><code class="docutils literal notranslate"><span class="pre">NeverProperty.out_coef_mat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.out_bias_mat"><code class="docutils literal notranslate"><span class="pre">NeverProperty.out_bias_mat</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.to_numeric_bounds"><code class="docutils literal notranslate"><span class="pre">NeverProperty.to_numeric_bounds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.to_star"><code class="docutils literal notranslate"><span class="pre">NeverProperty.to_star()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.to_smt_file"><code class="docutils literal notranslate"><span class="pre">NeverProperty.to_smt_file()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.verification.properties.VnnLibProperty"><code class="docutils literal notranslate"><span class="pre">VnnLibProperty</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.verification.properties.LocalRobustnessProperty"><code class="docutils literal notranslate"><span class="pre">LocalRobustnessProperty</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.verification.parameters.VerificationParameters"><code class="docutils literal notranslate"><span class="pre">VerificationParameters</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters"><code class="docutils literal notranslate"><span class="pre">SSLPVerificationParameters</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters"><code class="docutils literal notranslate"><span class="pre">SSBPVerificationParameters</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.verification.algorithms.VerificationStrategy"><code class="docutils literal notranslate"><span class="pre">VerificationStrategy</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.VerificationStrategy.parameters"><code class="docutils literal notranslate"><span class="pre">VerificationStrategy.parameters</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.VerificationStrategy.logger"><code class="docutils literal notranslate"><span class="pre">VerificationStrategy.logger</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.VerificationStrategy.verify"><code class="docutils literal notranslate"><span class="pre">VerificationStrategy.verify()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.properties.VnnLibProperty"><code class="docutils literal notranslate"><span class="pre">VnnLibProperty</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.properties.LocalRobustnessProperty"><code class="docutils literal notranslate"><span class="pre">LocalRobustnessProperty</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSLPVerification"><code class="docutils literal notranslate"><span class="pre">SSLPVerification</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSLPVerification.counterexample_stars"><code class="docutils literal notranslate"><span class="pre">SSLPVerification.counterexample_stars</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSLPVerification.layers_bounds"><code class="docutils literal notranslate"><span class="pre">SSLPVerification.layers_bounds</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSLPVerification.verify"><code class="docutils literal notranslate"><span class="pre">SSLPVerification.verify()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynever.strategies.verification.algorithms">Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.VerificationStrategy"><code class="docutils literal notranslate"><span class="pre">VerificationStrategy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.VerificationStrategy.parameters"><code class="docutils literal notranslate"><span class="pre">VerificationStrategy.parameters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.VerificationStrategy.logger"><code class="docutils literal notranslate"><span class="pre">VerificationStrategy.logger</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.VerificationStrategy.verify"><code class="docutils literal notranslate"><span class="pre">VerificationStrategy.verify()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification"><code class="docutils literal notranslate"><span class="pre">SSBPVerification</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.network"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.network</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.prop"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.prop</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.init_search"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.init_search()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.get_bounds"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.get_bounds()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.compute_intersection"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.compute_intersection()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.get_next_target"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.get_next_target()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.verify"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.verify()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSLPVerification"><code class="docutils literal notranslate"><span class="pre">SSLPVerification</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSLPVerification.counterexample_stars"><code class="docutils literal notranslate"><span class="pre">SSLPVerification.counterexample_stars</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSLPVerification.layers_bounds"><code class="docutils literal notranslate"><span class="pre">SSLPVerification.layers_bounds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSLPVerification.verify"><code class="docutils literal notranslate"><span class="pre">SSLPVerification.verify()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification"><code class="docutils literal notranslate"><span class="pre">SSBPVerification</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.network"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.network</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.prop"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.prop</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.init_search"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.init_search()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.get_bounds"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.get_bounds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.compute_intersection"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.compute_intersection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.get_next_target"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.get_next_target()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.algorithms.SSBPVerification.verify"><code class="docutils literal notranslate"><span class="pre">SSBPVerification.verify()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynever.strategies.verification.parameters">Parameters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.parameters.VerificationParameters"><code class="docutils literal notranslate"><span class="pre">VerificationParameters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters"><code class="docutils literal notranslate"><span class="pre">SSLPVerificationParameters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters"><code class="docutils literal notranslate"><span class="pre">SSBPVerificationParameters</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -121,8 +130,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-pynever.strategies.verification.properties">
-<span id="verification"></span><span id="verification-ref"></span><h1>Verification<a class="headerlink" href="#module-pynever.strategies.verification.properties" title="Link to this heading"></a></h1>
+  <section id="verification">
+<span id="verification-ref"></span><h1>Verification<a class="headerlink" href="#verification" title="Link to this heading"></a></h1>
+<p>To solve a verification problem <strong>pyNeVer</strong> can define the specifications to verify and instantiate
+verification algorithms to try and prove that these specifications hold.</p>
+<section id="module-pynever.strategies.verification.properties">
+<span id="properties"></span><h2>Properties<a class="headerlink" href="#module-pynever.strategies.verification.properties" title="Link to this heading"></a></h2>
 <p>This module defines neural network verification properties. The most general representation
 defines a single input property expressed as a linear combination of input variables, while
 the output property is a list of linear inequalities.</p>
@@ -243,25 +256,10 @@ label: str
 max_output: bool</p>
 </dd></dl>
 
-<dl class="py class" id="module-pynever.strategies.verification.parameters">
-<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.VerificationParameters">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.parameters.</span></span><span class="sig-name descname"><span class="pre">VerificationParameters</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.VerificationParameters" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
-</dd></dl>
-
+</section>
+<section id="module-pynever.strategies.verification.algorithms">
+<span id="algorithms"></span><h2>Algorithms<a class="headerlink" href="#module-pynever.strategies.verification.algorithms" title="Link to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSLPVerificationParameters">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.parameters.</span></span><span class="sig-name descname"><span class="pre">SSLPVerificationParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">heuristic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'complete'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neurons_to_refine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pynever.strategies.verification.parameters.VerificationParameters" title="pynever.strategies.verification.parameters.VerificationParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerificationParameters</span></code></a></p>
-</dd></dl>
-
-<dl class="py class">
-<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSBPVerificationParameters">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.parameters.</span></span><span class="sig-name descname"><span class="pre">SSBPVerificationParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">heuristic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">RefinementStrategy.INPUT_BOUNDS_CHANGE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">BoundsBackend.SYMBOLIC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">BoundsDirection.FORWARDS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intersection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">IntersectionStrategy.ADAPTIVE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters" title="Link to this definition"></a></dt>
-<dd><p>Bases: <a class="reference internal" href="#pynever.strategies.verification.parameters.VerificationParameters" title="pynever.strategies.verification.parameters.VerificationParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerificationParameters</span></code></a></p>
-</dd></dl>
-
-<dl class="py class" id="module-pynever.strategies.verification.algorithms">
 <dt class="sig sig-object py" id="pynever.strategies.verification.algorithms.VerificationStrategy">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.algorithms.</span></span><span class="sig-name descname"><span class="pre">VerificationStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/algorithms.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.algorithms.VerificationStrategy" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
@@ -464,6 +462,28 @@ search is complete it also returns a counterexample</p>
 
 </dd></dl>
 
+</section>
+<section id="module-pynever.strategies.verification.parameters">
+<span id="parameters"></span><h2>Parameters<a class="headerlink" href="#module-pynever.strategies.verification.parameters" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.VerificationParameters">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.parameters.</span></span><span class="sig-name descname"><span class="pre">VerificationParameters</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.VerificationParameters" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSLPVerificationParameters">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.parameters.</span></span><span class="sig-name descname"><span class="pre">SSLPVerificationParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">heuristic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'complete'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neurons_to_refine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynever.strategies.verification.parameters.VerificationParameters" title="pynever.strategies.verification.parameters.VerificationParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerificationParameters</span></code></a></p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSBPVerificationParameters">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.parameters.</span></span><span class="sig-name descname"><span class="pre">SSBPVerificationParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">heuristic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">RefinementStrategy.INPUT_BOUNDS_CHANGE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">BoundsBackend.SYMBOLIC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">BoundsDirection.FORWARDS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intersection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">IntersectionStrategy.ADAPTIVE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynever.strategies.verification.parameters.VerificationParameters" title="pynever.strategies.verification.parameters.VerificationParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerificationParameters</span></code></a></p>
+</dd></dl>
+
+</section>
 </section>
 
 

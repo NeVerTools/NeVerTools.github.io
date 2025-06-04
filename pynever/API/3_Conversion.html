@@ -44,7 +44,7 @@
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <p class="caption" role="heading"><span class="caption-text">Getting started</span></p>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="../Setup/setup.html">Installation and Setup</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Setup/install.html">Installation and Setup</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
 <ul>
@@ -56,27 +56,38 @@
 <li class="toctree-l1"><a class="reference internal" href="1_Nodes.html">Nodes</a></li>
 <li class="toctree-l1"><a class="reference internal" href="2_Training.html">Training</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Conversion</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.conversion.representation.AlternativeRepresentation"><code class="docutils literal notranslate"><span class="pre">AlternativeRepresentation</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.representation.AlternativeRepresentation.identifier"><code class="docutils literal notranslate"><span class="pre">AlternativeRepresentation.identifier</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynever.strategies.conversion.representation">Representation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.representation.AlternativeRepresentation"><code class="docutils literal notranslate"><span class="pre">AlternativeRepresentation</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.conversion.representation.AlternativeRepresentation.identifier"><code class="docutils literal notranslate"><span class="pre">AlternativeRepresentation.identifier</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.conversion.representation.ONNXNetwork"><code class="docutils literal notranslate"><span class="pre">ONNXNetwork</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.representation.ONNXNetwork.onnx_network"><code class="docutils literal notranslate"><span class="pre">ONNXNetwork.onnx_network</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.representation.ONNXNetwork"><code class="docutils literal notranslate"><span class="pre">ONNXNetwork</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.conversion.representation.ONNXNetwork.onnx_network"><code class="docutils literal notranslate"><span class="pre">ONNXNetwork.onnx_network</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.conversion.representation.PyTorchNetwork"><code class="docutils literal notranslate"><span class="pre">PyTorchNetwork</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.representation.PyTorchNetwork.pytorch_network"><code class="docutils literal notranslate"><span class="pre">PyTorchNetwork.pytorch_network</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.representation.PyTorchNetwork"><code class="docutils literal notranslate"><span class="pre">PyTorchNetwork</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.conversion.representation.PyTorchNetwork.pytorch_network"><code class="docutils literal notranslate"><span class="pre">PyTorchNetwork.pytorch_network</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.conversion.representation.ConversionStrategy"><code class="docutils literal notranslate"><span class="pre">ConversionStrategy</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.representation.ConversionStrategy.from_neural_network"><code class="docutils literal notranslate"><span class="pre">ConversionStrategy.from_neural_network()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.representation.ConversionStrategy.to_neural_network"><code class="docutils literal notranslate"><span class="pre">ConversionStrategy.to_neural_network()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.representation.ConversionStrategy"><code class="docutils literal notranslate"><span class="pre">ConversionStrategy</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.conversion.representation.ConversionStrategy.from_neural_network"><code class="docutils literal notranslate"><span class="pre">ConversionStrategy.from_neural_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.conversion.representation.ConversionStrategy.to_neural_network"><code class="docutils literal notranslate"><span class="pre">ConversionStrategy.to_neural_network()</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.conversion.representation.load_network_path"><code class="docutils literal notranslate"><span class="pre">load_network_path()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#pynever.strategies.conversion.converters.onnx.ONNXConverter"><code class="docutils literal notranslate"><span class="pre">ONNXConverter</span></code></a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.converters.onnx.ONNXConverter.from_neural_network"><code class="docutils literal notranslate"><span class="pre">ONNXConverter.from_neural_network()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.converters.onnx.ONNXConverter.to_neural_network"><code class="docutils literal notranslate"><span class="pre">ONNXConverter.to_neural_network()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.representation.load_network_path"><code class="docutils literal notranslate"><span class="pre">load_network_path()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynever.strategies.conversion.converters.onnx">Converters</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.converters.onnx.ONNXConverter"><code class="docutils literal notranslate"><span class="pre">ONNXConverter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.conversion.converters.onnx.ONNXConverter.from_neural_network"><code class="docutils literal notranslate"><span class="pre">ONNXConverter.from_neural_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.conversion.converters.onnx.ONNXConverter.to_neural_network"><code class="docutils literal notranslate"><span class="pre">ONNXConverter.to_neural_network()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.conversion.converters.pytorch.PyTorchConverter"><code class="docutils literal notranslate"><span class="pre">PyTorchConverter</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.conversion.converters.pytorch.PyTorchConverter.from_neural_network"><code class="docutils literal notranslate"><span class="pre">PyTorchConverter.from_neural_network()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.conversion.converters.pytorch.PyTorchConverter.to_neural_network"><code class="docutils literal notranslate"><span class="pre">PyTorchConverter.to_neural_network()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -108,8 +119,12 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="module-pynever.strategies.conversion.representation">
-<span id="conversion"></span><span id="conversion-ref"></span><h1>Conversion<a class="headerlink" href="#module-pynever.strategies.conversion.representation" title="Link to this heading"></a></h1>
+  <section id="conversion">
+<span id="conversion-ref"></span><h1>Conversion<a class="headerlink" href="#conversion" title="Link to this heading"></a></h1>
+<p><strong>pyNeVer</strong> provides conversion capabilities to import a NN model in the ONNX and pyTorch file formats,
+as well as to export to these formats trained NNs.</p>
+<section id="module-pynever.strategies.conversion.representation">
+<span id="representation"></span><h2>Representation<a class="headerlink" href="#module-pynever.strategies.conversion.representation" title="Link to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.conversion.representation.AlternativeRepresentation">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.conversion.representation.</span></span><span class="sig-name descname"><span class="pre">AlternativeRepresentation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identifier</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/conversion/representation.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.conversion.representation.AlternativeRepresentation" title="Link to this definition"></a></dt>
@@ -222,7 +237,10 @@
 </dl>
 </dd></dl>
 
-<dl class="py class" id="module-pynever.strategies.conversion.converters.onnx">
+</section>
+<section id="module-pynever.strategies.conversion.converters.onnx">
+<span id="converters"></span><h2>Converters<a class="headerlink" href="#module-pynever.strategies.conversion.converters.onnx" title="Link to this heading"></a></h2>
+<dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.conversion.converters.onnx.ONNXConverter">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.conversion.converters.onnx.</span></span><span class="sig-name descname"><span class="pre">ONNXConverter</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/conversion/converters/onnx.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.conversion.converters.onnx.ONNXConverter" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pynever.strategies.conversion.representation.ConversionStrategy" title="pynever.strategies.conversion.representation.ConversionStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConversionStrategy</span></code></a></p>
@@ -263,6 +281,48 @@
 
 </dd></dl>
 
+<dl class="py class" id="module-pynever.strategies.conversion.converters.pytorch">
+<dt class="sig sig-object py" id="pynever.strategies.conversion.converters.pytorch.PyTorchConverter">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.conversion.converters.pytorch.</span></span><span class="sig-name descname"><span class="pre">PyTorchConverter</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/conversion/converters/pytorch.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.conversion.converters.pytorch.PyTorchConverter" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#pynever.strategies.conversion.representation.ConversionStrategy" title="pynever.strategies.conversion.representation.ConversionStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">ConversionStrategy</span></code></a></p>
+<p>A class used to represent the conversion strategy for PyTorch models.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pynever.strategies.conversion.converters.pytorch.PyTorchConverter.from_neural_network">
+<span class="sig-name descname"><span class="pre">from_neural_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/conversion/converters/pytorch.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.conversion.converters.pytorch.PyTorchConverter.from_neural_network" title="Link to this definition"></a></dt>
+<dd><p>Convert the neural network of interest to a PyTorch representation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>network</strong> (<a class="reference internal" href="0_Networks.html#pynever.networks.NeuralNetwork" title="pynever.networks.NeuralNetwork"><em>NeuralNetwork</em></a>) – The neural network to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The PyTorch representation resulting from the conversion of the original network.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="#pynever.strategies.conversion.representation.PyTorchNetwork" title="pynever.strategies.conversion.representation.PyTorchNetwork">PyTorchNetwork</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynever.strategies.conversion.converters.pytorch.PyTorchConverter.to_neural_network">
+<span class="sig-name descname"><span class="pre">to_neural_network</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">alt_rep</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/conversion/converters/pytorch.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.conversion.converters.pytorch.PyTorchConverter.to_neural_network" title="Link to this definition"></a></dt>
+<dd><p>Convert the PyTorch representation of interest to the internal one.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>alt_rep</strong> (<a class="reference internal" href="#pynever.strategies.conversion.representation.PyTorchNetwork" title="pynever.strategies.conversion.representation.PyTorchNetwork"><em>PyTorchNetwork</em></a>) – The PyTorch Representation to convert.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The Neural Network resulting from the conversion of PyTorch Representation.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference internal" href="0_Networks.html#pynever.networks.NeuralNetwork" title="pynever.networks.NeuralNetwork">NeuralNetwork</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
 </section>
 
 
