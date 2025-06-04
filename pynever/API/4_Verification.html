@@ -259,6 +259,10 @@ max_output: bool</p>
 </section>
 <section id="module-pynever.strategies.verification.algorithms">
 <span id="algorithms"></span><h2>Algorithms<a class="headerlink" href="#module-pynever.strategies.verification.algorithms" title="Link to this heading"></a></h2>
+<p>This module contains the classes used to implement the different verification strategies. Following the strategy pattern,
+the class <code class="docutils literal notranslate"><span class="pre">VerificationStrategy</span></code> is the abstract class providing a <code class="docutils literal notranslate"><span class="pre">verify</span></code> method that requires a neural network and
+a property. The concrete classes <code class="docutils literal notranslate"><span class="pre">SSLPVerification</span></code> and <code class="docutils literal notranslate"><span class="pre">SSBPVerification</span></code> implement the verification strategies based
+on starsets and symbolic bounds propagation, respectively.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.verification.algorithms.VerificationStrategy">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.algorithms.</span></span><span class="sig-name descname"><span class="pre">VerificationStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/algorithms.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.algorithms.VerificationStrategy" title="Link to this definition"></a></dt>
@@ -289,17 +293,17 @@ max_output: bool</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.verification.algorithms.VerificationStrategy.verify">
 <em class="property"><span class="k"><span class="pre">abstractmethod</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">verify</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/algorithms.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.algorithms.VerificationStrategy.verify" title="Link to this definition"></a></dt>
-<dd><p>Verify that the neural network of interest satisfy the property given as argument
+<dd><p>Verify that the neural network of interest satisfies the property given as argument
 using a verification strategy determined in the concrete children.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>network</strong> (<a class="reference internal" href="0_Networks.html#pynever.networks.NeuralNetwork" title="pynever.networks.NeuralNetwork"><em>NeuralNetwork</em></a>) – The neural network to train.</p></li>
-<li><p><strong>prop</strong> (<em>Dataset</em>) – The property which the neural network must satisfy.</p></li>
+<li><p><strong>prop</strong> (<a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty" title="pynever.strategies.verification.properties.NeverProperty"><em>NeverProperty</em></a>) – The property which the neural network must satisfy.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True is the neural network satisfy the property, False otherwise.</p>
+<dd class="field-even"><p>True is the neural network satisfies the property, False otherwise.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>bool</p>
@@ -313,11 +317,11 @@ using a verification strategy determined in the concrete children.</p>
 <dt class="sig sig-object py" id="pynever.strategies.verification.algorithms.SSLPVerification">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.algorithms.</span></span><span class="sig-name descname"><span class="pre">SSLPVerification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">params</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/algorithms.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.algorithms.SSLPVerification" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pynever.strategies.verification.algorithms.VerificationStrategy" title="pynever.strategies.verification.algorithms.VerificationStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerificationStrategy</span></code></a></p>
-<p>Class used to represent the SSLP verification strategy.</p>
+<p>Class used to represent the SSLP (Star Sets with Linear Programming) verification strategy.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.verification.algorithms.SSLPVerification.counterexample_stars">
 <span class="sig-name descname"><span class="pre">counterexample_stars</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/algorithms.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.algorithms.SSLPVerification.counterexample_stars" title="Link to this definition"></a></dt>
-<dd><p>List of Star objects containing a counterexample</p>
+<dd><p>List of <code class="xref py py-class docutils literal notranslate"><span class="pre">Star</span></code> objects containing a counterexample</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>list[Star]</p>
@@ -362,16 +366,16 @@ using a verification strategy determined in the concrete children.</p>
 <dt class="sig sig-object py" id="pynever.strategies.verification.algorithms.SSBPVerification">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.algorithms.</span></span><span class="sig-name descname"><span class="pre">SSBPVerification</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/algorithms.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.algorithms.SSBPVerification" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pynever.strategies.verification.algorithms.VerificationStrategy" title="pynever.strategies.verification.algorithms.VerificationStrategy"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerificationStrategy</span></code></a></p>
-<p>Class used to represent the search-based verification strategy. It uses
-star propagation with Symbolic Bounds Propagation and an abstraction-refinement
-loop for better readability, structure and functionality</p>
+<p>Class used to represent the SSBP (Star Sets with Bounds Propagation) verification strategy.
+It uses star propagation with Symbolic Bounds Propagation and an abstraction-refinement
+loop for better readability, structure and functionality.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="pynever.strategies.verification.algorithms.SSBPVerification.network">
 <span class="sig-name descname"><span class="pre">network</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/algorithms.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.algorithms.SSBPVerification.network" title="Link to this definition"></a></dt>
 <dd><p>The neural network to verify</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><a class="reference internal" href="0_Networks.html#pynever.networks.SequentialNetwork" title="pynever.networks.SequentialNetwork">networks.SequentialNetwork</a></p>
+<dd class="field-odd"><p><a class="reference internal" href="0_Networks.html#pynever.networks.NeuralNetwork" title="pynever.networks.NeuralNetwork">NeuralNetwork</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -390,11 +394,19 @@ loop for better readability, structure and functionality</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.verification.algorithms.SSBPVerification.init_search">
 <span class="sig-name descname"><span class="pre">init_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">network</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prop</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/algorithms.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.algorithms.SSBPVerification.init_search" title="Link to this definition"></a></dt>
-<dd><p>Initialize the search algorithm and compute the
-starting values for the bounds, the star and the target</p>
+<dd><p>Initialize the search algorithm and compute the starting values for the bounds and the star.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>network</strong> (<a class="reference internal" href="0_Networks.html#pynever.networks.NeuralNetwork" title="pynever.networks.NeuralNetwork"><em>NeuralNetwork</em></a>) – The neural network in use</p></li>
+<li><p><strong>prop</strong> (<a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty" title="pynever.strategies.verification.properties.NeverProperty"><em>NeverProperty</em></a>) – The property specification</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The starting values for the star and the bounds.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">ExtendedStar</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">HyperRectangleBounds</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">VerboseBounds</span></code>]</span></p>
+<dd class="field-odd"><p>ExtendedStar, HyperRectangleBounds, VerboseBounds</p>
 </dd>
 </dl>
 </dd></dl>
@@ -421,8 +433,17 @@ plug and play different bound propagation algorithms</p>
 <dd><p>This method computes the intersection between a star and the output property
 using the intersection algorithm specified by the parameters</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>star</strong> (<em>ExtendedStar</em>) – The <code class="xref py py-class docutils literal notranslate"><span class="pre">ExtendedStar</span></code> object containing the star to intersect</p></li>
+<li><p><strong>nn_bounds</strong> (<em>VerboseBounds</em>) – The bounds obtained through bounds propagation</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The result of the intersection. If True, a counterexample is returned too.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Tensor</span></code>]</span></p>
+<dd class="field-odd"><p>bool, torch.Tensor</p>
 </dd>
 </dl>
 </dd></dl>
@@ -431,10 +452,19 @@ using the intersection algorithm specified by the parameters</p>
 <dt class="sig sig-object py" id="pynever.strategies.verification.algorithms.SSBPVerification.get_next_target">
 <span class="sig-name descname"><span class="pre">get_next_target</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">star</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nn_bounds</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/algorithms.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.algorithms.SSBPVerification.get_next_target" title="Link to this definition"></a></dt>
 <dd><p>This method computes the next refinement target for the verification algorithm
-based on the strategy specified by the parameters</p>
+based on the strategy specified by the parameters.</p>
 <dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>star</strong> (<em>ExtendedStar</em>) – The <code class="xref py py-class docutils literal notranslate"><span class="pre">ExtendedStar</span></code> object containing the star to refine</p></li>
+<li><p><strong>nn_bounds</strong> (<em>VerboseBounds</em>) – The bounds obtained through bounds propagation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The next refinement target and the extended star to refine. If no more refinement is needed, None is returned.</p>
+</dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">RefinementTarget</span></code> | <code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ExtendedStar</span></code>]</span></p>
+<dd class="field-odd"><p>RefinementTarget | None, ExtendedStar</p>
 </dd>
 </dl>
 </dd></dl>
@@ -447,7 +477,7 @@ based on the strategy specified by the parameters</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>network</strong> (<a class="reference internal" href="0_Networks.html#pynever.networks.NeuralNetwork" title="pynever.networks.NeuralNetwork"><em>NeuralNetwork</em></a>) – The network model in the internal representation</p></li>
-<li><p><strong>prop</strong> (<em>Property</em>) – The property specification</p></li>
+<li><p><strong>prop</strong> (<a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty" title="pynever.strategies.verification.properties.NeverProperty"><em>NeverProperty</em></a>) – The property specification</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -455,7 +485,7 @@ based on the strategy specified by the parameters</p>
 search is complete it also returns a counterexample</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool, Optional[torch.Tensor]</p>
+<dd class="field-odd"><p>bool, torch.tensor | None</p>
 </dd>
 </dl>
 </dd></dl>
