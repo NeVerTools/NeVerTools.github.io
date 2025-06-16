@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stand-alone &mdash; pyNeVer &#39;1.2.6&#39; documentation</title>
+  <title>Command-line interface &mdash; pyNeVer &#39;1.2.6&#39; documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -48,11 +48,11 @@
 </ul>
 <p class="caption" role="heading"><span class="caption-text">Usage</span></p>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Stand-alone</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command-line interface</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Command-line interface</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#supported-layers">Supported layers</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="#api">API</a></li>
 </ul>
 <p class="caption" role="heading"><span class="caption-text">API Documentation</span></p>
 <ul>
@@ -77,7 +77,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Stand-alone</li>
+      <li class="breadcrumb-item active">Command-line interface</li>
       <li class="wy-breadcrumbs-aside">
             <a href="../_sources/Guide/usage.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -87,10 +87,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="stand-alone">
-<h1>Stand-alone<a class="headerlink" href="#stand-alone" title="Link to this heading"></a></h1>
-<section id="command-line-interface">
-<h2>Command-line interface<a class="headerlink" href="#command-line-interface" title="Link to this heading"></a></h2>
+  <section id="command-line-interface">
+<h1>Command-line interface<a class="headerlink" href="#command-line-interface" title="Link to this heading"></a></h1>
 <div class="line-block">
 <div class="line">To verify <a class="reference external" href="https://www.vnnlib.org">VNN-LIB</a> specifications on ONNX models we provide two scripts:</div>
 <div class="line">one for single instances and another one for multiple instances.</div>
@@ -113,7 +111,6 @@
 </ul>
 </li>
 </ul>
-</section>
 <section id="supported-layers">
 <h2>Supported layers<a class="headerlink" href="#supported-layers" title="Link to this heading"></a></h2>
 <p>At present the <strong>pyNeVer</strong> package supports abstraction and verification of fully connected and convolutional
@@ -126,6 +123,16 @@ internal representation used by <strong>pyNeVer</strong>.</p>
 the specification which can be found in the documentation, or via an SMT-LIB file compliant to the
 <a class="reference external" href="https://www.vnnlib.org">VNN-LIB</a> standard.</p>
 </section>
+</section>
+<section id="api">
+<h1>API<a class="headerlink" href="#api" title="Link to this heading"></a></h1>
+<p>In the <a class="reference external" href="https://github.com/NeVerTools/pyNeVer/tree/main/examples/notebooks">notebooks</a> directory there are four Jupyter Notebooks that illustrate how to use <em>pyNever</em> as an API to design, train and verify neural networks.</p>
+<ul class="simple">
+<li><p>The <a class="reference external" href="https://github.com/NeVerTools/pyNeVer/blob/main/examples/notebooks/00%20-%20Networks.ipynb">first notebook</a> covers the classes and methods to build networks</p></li>
+<li><p>The <a class="reference external" href="https://github.com/NeVerTools/pyNeVer/blob/main/examples/notebooks/01%20-%20Training.ipynb">second notebook</a> covers the learning strategy to train and test a network</p></li>
+<li><p>The <a class="reference external" href="https://github.com/NeVerTools/pyNeVer/blob/main/examples/notebooks/02%20-%20Safety%20specifications.ipynb">third notebook</a> explains how to build a safety specification to define a verification problem</p></li>
+<li><p>The <a class="reference external" href="https://github.com/NeVerTools/pyNeVer/blob/main/examples/notebooks/03%20-%20Verification.ipynb">fourth notebook</a> explains our verification algorithms and covers how to instantiate and execute verification</p></li>
+</ul>
 </section>
 
 
