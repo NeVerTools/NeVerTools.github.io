@@ -100,8 +100,19 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#module-pynever.strategies.verification.parameters">Parameters</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.parameters.VerificationParameters"><code class="docutils literal notranslate"><span class="pre">VerificationParameters</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters"><code class="docutils literal notranslate"><span class="pre">SSLPVerificationParameters</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters"><code class="docutils literal notranslate"><span class="pre">SSBPVerificationParameters</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters"><code class="docutils literal notranslate"><span class="pre">SSLPVerificationParameters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters.heuristic"><code class="docutils literal notranslate"><span class="pre">SSLPVerificationParameters.heuristic</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters.neurons_to_refine"><code class="docutils literal notranslate"><span class="pre">SSLPVerificationParameters.neurons_to_refine</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters"><code class="docutils literal notranslate"><span class="pre">SSBPVerificationParameters</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters.heuristic"><code class="docutils literal notranslate"><span class="pre">SSBPVerificationParameters.heuristic</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters.bounds"><code class="docutils literal notranslate"><span class="pre">SSBPVerificationParameters.bounds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters.bounds_direction"><code class="docutils literal notranslate"><span class="pre">SSBPVerificationParameters.bounds_direction</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters.intersection"><code class="docutils literal notranslate"><span class="pre">SSBPVerificationParameters.intersection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters.timeout"><code class="docutils literal notranslate"><span class="pre">SSBPVerificationParameters.timeout</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -497,22 +508,106 @@ search is complete it also returns a counterexample</p>
 </section>
 <section id="module-pynever.strategies.verification.parameters">
 <span id="parameters"></span><h2>Parameters<a class="headerlink" href="#module-pynever.strategies.verification.parameters" title="Link to this heading"></a></h2>
+<p>This module contains the classes used to define verification parameters for different strategies.
+The class <code class="docutils literal notranslate"><span class="pre">VerificationParameters</span></code> is the abstract class from which derive the concrete classes
+<code class="docutils literal notranslate"><span class="pre">SSLPVerificationParameters</span></code> and <code class="docutils literal notranslate"><span class="pre">SSBPVerificationParameters</span></code>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.verification.parameters.VerificationParameters">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.parameters.</span></span><span class="sig-name descname"><span class="pre">VerificationParameters</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.VerificationParameters" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">ABC</span></code></p>
+<p>This class is the abstract base for defining the verification parameters
+related to a specific verification algorithm</p>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSLPVerificationParameters">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.parameters.</span></span><span class="sig-name descname"><span class="pre">SSLPVerificationParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">heuristic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'complete'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neurons_to_refine</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pynever.strategies.verification.parameters.VerificationParameters" title="pynever.strategies.verification.parameters.VerificationParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerificationParameters</span></code></a></p>
+<p>This class defines the parameters for the SSLP verification algorithm.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSLPVerificationParameters.heuristic">
+<span class="sig-name descname"><span class="pre">heuristic</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters.heuristic" title="Link to this definition"></a></dt>
+<dd><p>The verification heuristic (complete, mixed or approximate)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSLPVerificationParameters.neurons_to_refine">
+<span class="sig-name descname"><span class="pre">neurons_to_refine</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSLPVerificationParameters.neurons_to_refine" title="Link to this definition"></a></dt>
+<dd><p>The number of neurons to refine in the mixed setting</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSBPVerificationParameters">
 <em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.parameters.</span></span><span class="sig-name descname"><span class="pre">SSBPVerificationParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">heuristic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">RefinementStrategy.INPUT_BOUNDS_CHANGE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">BoundsBackend.SYMBOLIC</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bounds_direction</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">BoundsDirection.FORWARDS</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intersection</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">IntersectionStrategy.ADAPTIVE</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">60</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters" title="Link to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#pynever.strategies.verification.parameters.VerificationParameters" title="pynever.strategies.verification.parameters.VerificationParameters"><code class="xref py py-class docutils literal notranslate"><span class="pre">VerificationParameters</span></code></a></p>
+<p>This class defines the parameters for the SSBP verification algorithm.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSBPVerificationParameters.heuristic">
+<span class="sig-name descname"><span class="pre">heuristic</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters.heuristic" title="Link to this definition"></a></dt>
+<dd><p>The refinement heuristic to apply</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>RefinementStrategy</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSBPVerificationParameters.bounds">
+<span class="sig-name descname"><span class="pre">bounds</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters.bounds" title="Link to this definition"></a></dt>
+<dd><p>The bounds backend structure to use</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BoundsBackend</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSBPVerificationParameters.bounds_direction">
+<span class="sig-name descname"><span class="pre">bounds_direction</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters.bounds_direction" title="Link to this definition"></a></dt>
+<dd><p>The direction to compute the bounds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>BoundsDirection</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSBPVerificationParameters.intersection">
+<span class="sig-name descname"><span class="pre">intersection</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters.intersection" title="Link to this definition"></a></dt>
+<dd><p>The intersection strategy to use</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>IntersectionStrategy</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynever.strategies.verification.parameters.SSBPVerificationParameters.timeout">
+<span class="sig-name descname"><span class="pre">timeout</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/parameters.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.parameters.SSBPVerificationParameters.timeout" title="Link to this definition"></a></dt>
+<dd><p>The timeout in seconds</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
