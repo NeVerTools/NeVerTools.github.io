@@ -115,6 +115,20 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#module-pynever.strategies.verification.ssbp.constants">Enumerators</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.RefinementTarget"><code class="docutils literal notranslate"><span class="pre">RefinementTarget</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.RefinementTarget.layer_id"><code class="docutils literal notranslate"><span class="pre">RefinementTarget.layer_id</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.RefinementTarget.neuron_idx"><code class="docutils literal notranslate"><span class="pre">RefinementTarget.neuron_idx</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.RefinementTarget.to_pair"><code class="docutils literal notranslate"><span class="pre">RefinementTarget.to_pair()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.NeuronSplit"><code class="docutils literal notranslate"><span class="pre">NeuronSplit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.BoundsDirection"><code class="docutils literal notranslate"><span class="pre">BoundsDirection</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.BoundsBackend"><code class="docutils literal notranslate"><span class="pre">BoundsBackend</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.RefinementStrategy"><code class="docutils literal notranslate"><span class="pre">RefinementStrategy</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.IntersectionStrategy"><code class="docutils literal notranslate"><span class="pre">IntersectionStrategy</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -316,10 +330,11 @@ using a verification strategy determined in the concrete children.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True is the neural network satisfies the property, False otherwise.</p>
+<dd class="field-even"><p>True is the neural network satisfies the property, False otherwise.
+If False, also returns a counterexample</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p>tuple[bool, torch.Tensor | None]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -365,10 +380,11 @@ using a verification strategy determined in the concrete children.</p>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>True if the network is safe, False otherwise</p>
+<dd class="field-even"><p>True is the neural network satisfies the property, False otherwise.
+If False, also returns a counterexample</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool</p>
+<dd class="field-odd"><p>tuple[bool, torch.Tensor | None]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -419,7 +435,7 @@ loop for better readability, structure and functionality.</p>
 <dd class="field-even"><p>The starting values for the star and the bounds.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>ExtendedStar, HyperRectangleBounds, VerboseBounds</p>
+<dd class="field-odd"><p>tuple[ExtendedStar, HyperRectangleBounds, VerboseBounds]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -456,7 +472,7 @@ using the intersection algorithm specified by the parameters</p>
 <dd class="field-even"><p>The result of the intersection. If True, a counterexample is returned too.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool, torch.Tensor</p>
+<dd class="field-odd"><p>tuple[bool, torch.Tensor]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -477,7 +493,7 @@ based on the strategy specified by the parameters.</p>
 <dd class="field-even"><p>The next refinement target and the extended star to refine. If no more refinement is needed, None is returned.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>RefinementTarget | None, ExtendedStar</p>
+<dd class="field-odd"><p>tuple[<a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.RefinementTarget" title="pynever.strategies.verification.ssbp.constants.RefinementTarget">RefinementTarget</a> | None, ExtendedStar]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -498,7 +514,7 @@ based on the strategy specified by the parameters.</p>
 search is complete it also returns a counterexample</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>bool, torch.tensor | None</p>
+<dd class="field-odd"><p>tuple[bool, torch.Tensor | None]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -559,7 +575,7 @@ related to a specific verification algorithm</p>
 <dd><p>The refinement heuristic to apply</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>RefinementStrategy</p>
+<dd class="field-odd"><p><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.RefinementStrategy" title="pynever.strategies.verification.ssbp.constants.RefinementStrategy">RefinementStrategy</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -570,7 +586,7 @@ related to a specific verification algorithm</p>
 <dd><p>The bounds backend structure to use</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>BoundsBackend</p>
+<dd class="field-odd"><p><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.BoundsBackend" title="pynever.strategies.verification.ssbp.constants.BoundsBackend">BoundsBackend</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -581,7 +597,7 @@ related to a specific verification algorithm</p>
 <dd><p>The direction to compute the bounds</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>BoundsDirection</p>
+<dd class="field-odd"><p><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.BoundsDirection" title="pynever.strategies.verification.ssbp.constants.BoundsDirection">BoundsDirection</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -592,7 +608,7 @@ related to a specific verification algorithm</p>
 <dd><p>The intersection strategy to use</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>IntersectionStrategy</p>
+<dd class="field-odd"><p><a class="reference internal" href="#pynever.strategies.verification.ssbp.constants.IntersectionStrategy" title="pynever.strategies.verification.ssbp.constants.IntersectionStrategy">IntersectionStrategy</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -608,6 +624,104 @@ related to a specific verification algorithm</p>
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+</section>
+<section id="module-pynever.strategies.verification.ssbp.constants">
+<span id="enumerators"></span><h2>Enumerators<a class="headerlink" href="#module-pynever.strategies.verification.ssbp.constants" title="Link to this heading"></a></h2>
+<p>This module defines utility enumerators suppoorting the SSBP verification algorithm</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pynever.strategies.verification.ssbp.constants.RefinementTarget">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.ssbp.constants.</span></span><span class="sig-name descname"><span class="pre">RefinementTarget</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neuron_idx</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/ssbp/constants.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.ssbp.constants.RefinementTarget" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This class represents the refinement target for the verification.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynever.strategies.verification.ssbp.constants.RefinementTarget.layer_id">
+<span class="sig-name descname"><span class="pre">layer_id</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/ssbp/constants.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.ssbp.constants.RefinementTarget.layer_id" title="Link to this definition"></a></dt>
+<dd><p>Identifier of the target layer</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="pynever.strategies.verification.ssbp.constants.RefinementTarget.neuron_idx">
+<span class="sig-name descname"><span class="pre">neuron_idx</span></span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/ssbp/constants.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.ssbp.constants.RefinementTarget.neuron_idx" title="Link to this definition"></a></dt>
+<dd><p>Index of the target neuron</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pynever.strategies.verification.ssbp.constants.RefinementTarget.to_pair">
+<span class="sig-name descname"><span class="pre">to_pair</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/ssbp/constants.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.ssbp.constants.RefinementTarget.to_pair" title="Link to this definition"></a></dt>
+<dd><p>Procedure to convert the object to a tuple</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A tuple representation of the object</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>tuple[str, int]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynever.strategies.verification.ssbp.constants.NeuronSplit">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.ssbp.constants.</span></span><span class="sig-name descname"><span class="pre">NeuronSplit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/ssbp/constants.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.ssbp.constants.NeuronSplit" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>This class is used as an enumerator to distinguish the two outputs
+of a neuron split (positive or negative)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynever.strategies.verification.ssbp.constants.BoundsDirection">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.ssbp.constants.</span></span><span class="sig-name descname"><span class="pre">BoundsDirection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/ssbp/constants.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.ssbp.constants.BoundsDirection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>This class is used as an enumerator to choose the direction of
+the bounds computation (forwards or backwards)</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynever.strategies.verification.ssbp.constants.BoundsBackend">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.ssbp.constants.</span></span><span class="sig-name descname"><span class="pre">BoundsBackend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/ssbp/constants.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.ssbp.constants.BoundsBackend" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>This class is used as an enumerator to represent different bounds propagation
+strategies.</p>
+<ul class="simple">
+<li><p>symbolic bounds propagation from the Venus2 verifier</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynever.strategies.verification.ssbp.constants.RefinementStrategy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.ssbp.constants.</span></span><span class="sig-name descname"><span class="pre">RefinementStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/ssbp/constants.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.ssbp.constants.RefinementStrategy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>This class is used as an enumerator to represent different refinement strategies.</p>
+<ul class="simple">
+<li><p>sequential refinement refines each neuron in the order they appear in the network</p></li>
+<li><p>lowest approx selects the neuron that contributes with the lowest approximation</p></li>
+<li><p>lowest approx - current layer selects the neuron that contributes with the lowest approximation in the layer</p></li>
+<li><p>input bounds change selects the neuron that contributes most to change the input bounds when refined</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="pynever.strategies.verification.ssbp.constants.IntersectionStrategy">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pynever.strategies.verification.ssbp.constants.</span></span><span class="sig-name descname"><span class="pre">IntersectionStrategy</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/ssbp/constants.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.ssbp.constants.IntersectionStrategy" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Enum</span></code></p>
+<p>This class is used as an enumerator to represent different intersection strategies.</p>
+<ul class="simple">
+<li><p>star with LP propagates the star abstraction and uses an LP to check for an intersection</p></li>
+<li><p>adaptive uses different (precise or approximate) intersection checks based on the state of the search</p></li>
+</ul>
 </dd></dl>
 
 </section>
