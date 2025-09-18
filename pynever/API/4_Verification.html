@@ -64,6 +64,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.in_bias"><code class="docutils literal notranslate"><span class="pre">NeverProperty.in_bias</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.out_matrix_list"><code class="docutils literal notranslate"><span class="pre">NeverProperty.out_matrix_list</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.out_bias_list"><code class="docutils literal notranslate"><span class="pre">NeverProperty.out_bias_list</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.get_variables_dict"><code class="docutils literal notranslate"><span class="pre">NeverProperty.get_variables_dict()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.to_numeric_bounds"><code class="docutils literal notranslate"><span class="pre">NeverProperty.to_numeric_bounds()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.to_star"><code class="docutils literal notranslate"><span class="pre">NeverProperty.to_star()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#pynever.strategies.verification.properties.NeverProperty.to_smt_file"><code class="docutils literal notranslate"><span class="pre">NeverProperty.to_smt_file()</span></code></a></li>
@@ -217,6 +218,21 @@ the output property is a list of linear inequalities.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pynever.strategies.verification.properties.NeverProperty.get_variables_dict">
+<span class="sig-name descname"><span class="pre">get_variables_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/properties.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.properties.NeverProperty.get_variables_dict" title="Link to this definition"></a></dt>
+<dd><p>This method creates a dictionary with keys ‘Input’ and ‘Output’ which map
+to the corresponding lists of variables</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The variables names in a dictionary mapping ‘Input’ and ‘Output’</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict[str, list[str]]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.verification.properties.NeverProperty.to_numeric_bounds">
 <span class="sig-name descname"><span class="pre">to_numeric_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/properties.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.properties.NeverProperty.to_numeric_bounds" title="Link to this definition"></a></dt>
 <dd><p>This method creates a <code class="xref py py-class docutils literal notranslate"><span class="pre">HyperRectangleBounds</span></code>
@@ -249,16 +265,12 @@ it returns the hyper rectangle approximation of the input property.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pynever.strategies.verification.properties.NeverProperty.to_smt_file">
-<span class="sig-name descname"><span class="pre">to_smt_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'X'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Y'</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/properties.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.properties.NeverProperty.to_smt_file" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_smt_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference external" href="https://github.com/NeverTools/pynever/blob/main/pynever/strategies/verification/properties.py"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#pynever.strategies.verification.properties.NeverProperty.to_smt_file" title="Link to this definition"></a></dt>
 <dd><p>This method builds the SMT-LIB representation of the <code class="xref py py-class docutils literal notranslate"><span class="pre">NeVerProperty</span></code>,
 expressing the variables and the matrices as constraints in the corresponding logic</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>input_id</strong> (<em>str</em><em>, </em><em>Optional</em>) – Identifier of the input node (default: ‘X’)</p></li>
-<li><p><strong>output_id</strong> (<em>str</em><em>, </em><em>Optional</em>) – Identifier of the output node (default: ‘Y’)</p></li>
-<li><p><strong>filepath</strong> (<em>str</em>) – Path to the SMT-LIB file to create</p></li>
-</ul>
+<dd class="field-odd"><p><strong>filepath</strong> (<em>str</em>) – Path to the SMT-LIB file to create</p>
 </dd>
 </dl>
 </dd></dl>
